@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+  <meta name="author" content="Samoyed">
+
+
+  <meta name="subtitle" content="乱七八糟">
+
+
+  <meta name="description" content="乱七八糟">
+
+
+
+<title>地球物理学基础 | 萨摩耶科技</title>
+
+
+
+<link rel="icon" href="/favicon.png">
+
+
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/nprogress/nprogress.css">
+
+
+
+<script src="/lib/jquery.min.js"></script>
+
+
+<script src="/lib/iconify-icon.min.js"></script>
+
+
+<script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+<script>
+  tailwind.config = {
+    darkMode: "class",
+  };
+</script>
+
+
+<script src="/lib/nprogress/nprogress.js"></script>
+
+<script>
+  $(document).ready(() => {
+    NProgress.configure({
+      showSpinner: false,
+    });
+    NProgress.start();
+    $("#nprogress .bar").css({
+      background: "#de7441",
+    });
+    $("#nprogress .peg").css({
+      "box-shadow": "0 0 2px #de7441, 0 0 4px #de7441",
+    });
+    $("#nprogress .spinner-icon").css({
+      "border-top-color": "#de7441",
+      "border-left-color": "#de7441",
+    });
+    setTimeout(function () {
+      NProgress.done();
+      $(".fade").removeClass("out");
+    }, 800);
+  });
+</script>
+
+<script>
+  (function () {
+    const prefersDark =
+      window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const setting = localStorage.getItem("hexo-color-scheme") || "auto";
+    if (setting === "dark" || (prefersDark && setting !== "light"))
+      document.documentElement.classList.toggle("dark", true);
+    let isDark = document.documentElement.classList.contains("dark");
+  })();
+
+  $(document).ready(function () {
+    // init icon
+    const prefersDark =
+      window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const isDark = document.documentElement.classList.contains("dark");
+    $("#theme-icon").attr("icon", isDark ? "ri:moon-line" : "ri:sun-line");
+
+    function toggleGiscusTheme() {
+      const isDark = document.documentElement.classList.contains("dark");
+      const giscusFrame = document.querySelector("iframe.giscus-frame");
+      if (giscusFrame) {
+        giscusFrame.contentWindow.postMessage(
+          {
+            giscus: {
+              setConfig: {
+                theme: isDark ? "dark" : "light",
+              },
+            },
+          },
+          "https://giscus.app"
+        );
+      }
+    }
+
+    // toggle dark mode
+    function toggleDark() {
+      let isDark = document.documentElement.classList.contains("dark");
+      const setting = localStorage.getItem("hexo-color-scheme") || "auto";
+      isDark = !isDark;
+      document.documentElement.classList.toggle("dark", isDark);
+      $("#theme-icon").attr("icon", isDark ? "ri:moon-line" : "ri:sun-line");
+      if (prefersDark === isDark) {
+        localStorage.setItem("hexo-color-scheme", "auto");
+      } else {
+        localStorage.setItem("hexo-color-scheme", isDark ? "dark" : "light");
+      }
+      toggleGiscusTheme();
+    }
+
+    // listen dark mode change
+    window
+      .matchMedia("(prefers-color-scheme: dark)")
+      .addEventListener("change", (e) => {
+        const setting = localStorage.getItem("hexo-color-scheme") || "auto";
+        if (setting === "auto") {
+          document.documentElement.classList.toggle("dark", e.matches);
+          $("#theme-icon").attr(
+            "icon",
+            e.matches ? "ri:moon-line" : "ri:sun-line"
+          );
+          toggleGiscusTheme();
+        }
+      });
+
+    $("#toggle-dark").click((event) => {
+      const isAppearanceTransition = document.startViewTransition && !window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      if (!isAppearanceTransition) {
+        toggleDark()
+        return
+      }
+      const x = event.clientX
+      const y = event.clientY
+      const endRadius = Math.hypot(
+        Math.max(x, innerWidth - x),
+        Math.max(y, innerHeight - y),
+      )
+      const transition = document.startViewTransition(async () => {
+        toggleDark()
+      })
+
+      transition.ready
+        .then(() => {
+          const isDark = document.documentElement.classList.contains("dark")
+          const clipPath = [
+            `circle(0px at ${x}px ${y}px)`,
+            `circle(${endRadius}px at ${x}px ${y}px)`,
+          ]
+          document.documentElement.animate(
+            {
+              clipPath: isDark
+                ? [...clipPath].reverse()
+                : clipPath,
+            },
+            {
+              duration: 400,
+              easing: 'ease-out',
+              pseudoElement: isDark
+                ? '::view-transition-old(root)'
+                : '::view-transition-new(root)',
+            },
+          )
+        })
+    });
+  });
+</script>
+
+
+
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+<body class="font-sans bg-white dark:bg-zinc-900 text-gray-700 dark:text-gray-200 relative">
+  <header class="fixed w-full px-5 py-1 z-10 backdrop-blur-xl backdrop-saturate-150 border-b border-black/5">
+  <div class="max-auto">
+    <nav class="flex items-center text-base">
+      <a href="/" class="group">
+        <h2 class="font-medium tracking-tighterp text-l p-2">
+          <img class="w-5 mr-2 inline-block transition-transform group-hover:rotate-[30deg]" id="logo" src="/images/logo.svg" alt="萨摩耶科技" />
+          萨摩耶科技
+        </h2>
+      </a>
+      <div id="header-title" class="opacity-0 md:ml-2 md:mt-[0.1rem] text-xs font-medium whitespace-nowrap overflow-hidden overflow-ellipsis">
+        地球物理学基础
+      </div>
+      <div class="flex-1"></div>
+      <div class="flex items-center gap-3">
+        
+          <a class="hidden sm:flex" href="/archives">Posts</a>
+        
+          <a class="hidden sm:flex" href="/category">Categories</a>
+        
+          <a class="hidden sm:flex" href="/tag">Tags</a>
+        
+        
+          
+        
+        <a class="w-5 h-5 hidden sm:flex" title="" href="rss2.xml">
+          <iconify-icon width="20" icon="ri:rss-line"></iconify-icon>
+        </a>
+        <a class="w-5 h-5" title="toggle theme" id="toggle-dark">
+          <iconify-icon width="20" icon="" id="theme-icon"></iconify-icon>
+        </a>
+      </div>
+      <div class="flex items-center justify-center gap-3 ml-3 sm:hidden">
+        <span class="w-5 h-5" aria-hidden="true" role="img" id="open-menu">
+          <iconify-icon width="20" icon="carbon:menu" ></iconify-icon>
+        </span>
+        <span class="w-5 h-5 hidden" aria-hidden="true" role="img" id="close-menu">
+          <iconify-icon  width="20" icon="carbon:close" ></iconify-icon>
+        </span>
+      </div>
+    </nav>
+  </div>
+</header>
+<div id="menu-panel" class="h-0 overflow-hidden sm:hidden fixed left-0 right-0 top-12 bottom-0 z-10">
+  <div id="menu-content" class="relative z-20 bg-white/80 px-6 sm:px-8 py-2 backdrop-blur-xl -translate-y-full transition-transform duration-300">
+    <ul class="nav flex flex-col sm:flex-row text-sm font-medium">
+      
+        <li class="nav-portfolio sm:mx-2 border-b sm:border-0 border-black/5 last:border-0 hover:text-main">
+          <a href="/archives" class="flex h-12 sm:h-auto items-center">Posts</a>
+        </li>
+      
+        <li class="nav-portfolio sm:mx-2 border-b sm:border-0 border-black/5 last:border-0 hover:text-main">
+          <a href="/category" class="flex h-12 sm:h-auto items-center">Categories</a>
+        </li>
+      
+        <li class="nav-portfolio sm:mx-2 border-b sm:border-0 border-black/5 last:border-0 hover:text-main">
+          <a href="/tag" class="flex h-12 sm:h-auto items-center">Tags</a>
+        </li>
+      
+    </ul>
+  </div>
+  <div class="mask bg-black/20 absolute inset-0"></div>
+</div>
+
+  <main class="pt-14">
+    <!-- css -->
+
+<link rel="stylesheet" href="/lib/fancybox/fancybox.min.css">
+
+
+<link rel="stylesheet" href="/lib/tocbot/tocbot.min.css">
+
+<!-- toc -->
+
+  <!-- tocbot -->
+<nav class="post-toc toc text-sm w-48 relative top-32 right-0 opacity-70 hidden lg:block" style="position: fixed !important;"></nav>
+
+
+<section class="px-6 max-w-prose mx-auto md:px-0">
+  <!-- header -->
+  <header class="overflow-hidden pt-6 pb-6 md:pt-12">
+    <div class="pt-4 md:pt-6">
+      <h1 id="article-title" class="text-[2rem] font-bold leading-snug mb-4 md:mb-6 md:text-[2.6rem]">
+        地球物理学基础
+      </h1>
+      <div>
+        <section class="flex items-center gap-3 text-sm">
+          <span class="flex items-center gap-1">
+            <iconify-icon width="18" icon="carbon-calendar" ></iconify-icon>
+            <time>2024-11-21</time>
+          </span>
+          <span class="text-gray-400">·</span>
+          <span class="flex items-center gap-1">
+            <iconify-icon width="18" icon="ic:round-access-alarm" ></iconify-icon>
+            <span>44 min</span>
+          </span>
+          <span class="text-gray-400">·</span>
+          <span class="flex items-center gap-1">
+            <iconify-icon width="18" icon="icon-park-outline:font-search" ></iconify-icon>
+            <span>12.4k words</span>
+          </span>
+          
+            <span class="text-gray-400">·</span>
+            <span class="flex items-center gap-1">
+              <iconify-icon width="16" icon="icon-park-outline:box" class="mr-2"></iconify-icon>
+              <a class="article-category-link" href="/categories/%E5%9C%B0%E7%90%83%E7%89%A9%E7%90%86/">地球物理</a>
+            </span>
+          
+        </section>
+      </div>
+    </div>
+  </header>
+  <!-- content -->
+  <article class="post-content prose m-auto slide-enter-content dark:prose-invert">
+    <h1 id="地球物理学基础笔记"><a href="#地球物理学基础笔记" class="headerlink" title="地球物理学基础笔记"></a><strong>地球物理学基础笔记</strong></h1><h2 id="一-地震学"><a href="#一-地震学" class="headerlink" title="一.地震学"></a>一.地震学</h2><h3 id="1-弹性力学"><a href="#1-弹性力学" class="headerlink" title="1.弹性力学"></a>1.弹性力学</h3><h4 id="（1）基础概念"><a href="#（1）基础概念" class="headerlink" title="（1）基础概念"></a>（1）基础概念</h4><p>弹性行为：elastic behavior 形变后能变回原状</p>
+<p>应力 $\sigma &#x3D; F&#x2F;A$ 是外力作用在面上的压强，应变 $\epsilon &#x3D; \Delta h &#x2F; h$ 是形变的大小和原来大小的比</p>
+<p>其中的线性关系成为胡克定律 Hooke’s Law</p>
+<p>应力张量分量：$\sigma_{x y}&#x3D; F_y&#x2F;A_x$也就是说坐标 y 方向的 force 对 x 方向的面的应力</p>
+<p>应变张量分量：</p>
+<p>​	纵向应变：$\epsilon <em>{yy}&#x3D;-\nu \epsilon</em>{xx}$ 这里的\nu 是泊松比 Poisson’s ratio 是物体硬度的标志</p>
+<p>​		dilatation ：是总的形变大小$\theta &#x3D; \epsilon_{xx}+\epsilon_{yy}+\epsilon_{zz}$</p>
+<p>​	剪切应变：$\epsilon_{yz}&#x3D;\epsilon_{zy}&#x3D;1&#x2F;2(\frac{\partial w}{\partial y}+\frac{\partial v}{\partial z})$ 也就是总角形变的一半（uvw 是各方向形变量）</p>
+<h4 id="（2）应力应变关系"><a href="#（2）应力应变关系" class="headerlink" title="（2）应力应变关系"></a>（2）应力应变关系</h4><p>这里有三种模量 modulus</p>
+<p>杨氏模量：Young’s modulus 也就是纵向应力应变系数$\sigma <em>{xx} &#x3D; E\epsilon</em>{xx}$</p>
+<p>不知道中文模量：rigidity modulus 也就是剪切模量shear modulus $\sigma_{xy}&#x3D; 2\mu\epsilon_{xy}$</p>
+<p>不知道中文模量：bulk modulus 也就是体积相关的模量$p &#x3D; -K\theta$ （p 是 hydrostatic pressure）</p>
+<p>这三种模量不是完全独立的，有如下关系：</p>
+<p>$E&#x3D;(1-2\nu)(-3p&#x2F;\theta)$</p>
+<p>$K&#x3D;\frac E{3(1-2\nu)}$</p>
+<p>$\mu &#x3D; \frac E {2(1+\nu)}$</p>
+<p>Lame constants：（一种和形变有关的量）</p>
+<p>​		$\lambda &#x3D; \frac{\nu E}{(1+\nu)(1-2\nu)}$</p>
+<p>​		$\sigma_{xx}&#x3D; \lambda\theta +2\mu \epsilon_{xx}$</p>
+<p>各向异性：张量表示</p>
+<p>attenuation ：衰减</p>
+<p>damping：阻尼</p>
+<p>各量和 lame 的转化：</p>
+<p>​		$K &#x3D;\lambda +2 \mu&#x2F;3$</p>
+<p>​		$E &#x3D; \mu(\frac{3\lambda+2\mu}{\lambda+\mu})$</p>
+<p>​		$\nu &#x3D; \frac \lambda {2(\lambda+\mu)}$</p>
+<h3 id="2-地震波"><a href="#2-地震波" class="headerlink" title="2.地震波"></a>2.地震波</h3><p>行波不适用于靠近震源的情况</p>
+<h4 id="（1）体波"><a href="#（1）体波" class="headerlink" title="（1）体波"></a>（1）体波</h4><p>体波body wave分为纵波（p波）primary 也叫首波；横波（s 波）second</p>
+<p>其中纵波（p 波）的特性是行进的更快，可以在多种介质中传播，可以在液态外地核中传播</p>
+<p>p 波速度为：一维$\sqrt{E&#x2F;\rho}$   三维$\sqrt{(K+4\mu&#x2F;3)&#x2F;\rho}$  </p>
+<p>s 波更慢，并且只能在固态中传播，但是有偏振性（两种震荡方向SV 竖着的和 SH横着的）</p>
+<p>$p 波波速&#x2F;s波波速 &#x3D;\sqrt{(\lambda+2\mu)&#x2F;\mu}&#x3D;\sqrt 3$</p>
+<p>可以得到达朗贝尔行波解D’Alembert</p>
+<p>随着距离的增加体波的衰减比面波要快</p>
+<h4 id="（2）面波"><a href="#（2）面波" class="headerlink" title="（2）面波"></a>（2）面波</h4><p>半无限各向同性介质中，扰动的幅度随着离开表面迅速衰减，能量集中在一个面上的波</p>
+<p>​		i.瑞利波</p>
+<p>​			Rayleigh waves，质点画出一个椭圆前进，长轴在垂直方向，短轴在水平方向</p>
+<p>​			成因：p 波和 sv 波大于临界角入射造成的，转化波发生了相干叠加</p>
+<p>​			特性：在均匀半无限空间内是没有频散的，但是多层介质时会发生，衰减的很慢，有时甚至可以绕地球不						停运动，一般在地表产生，深度增加会逐渐变成顺时针椭圆，频率越低波长越长越能体现地球深处						的特性，频散曲线的拐点是地质分层点</p>
+<p>​			浅水波：rayleigh 波到浅水区域产生的，表现为海啸</p>
+<p>​			速度：s 波波速的 0.9 左右</p>
+<p>​		ii.勒夫波</p>
+<p>​			Love waves，介质垂直振动，是地震中破坏性的主要来源</p>
+<p>​			成因：超临界角度的 SH 波入射与底层反射的 SH波发生相干，且上层 S 波速度必须低于下层 S 波速度</p>
+<p>​			特性：总是色散的，不同频率的会不同走时，波包会发生变化</p>
+<p>​			速度：介于上下层之间，相速度和频率有关，波长很长的时候趋近于下层横波速度</p>
+<h3 id="3-地震射线"><a href="#3-地震射线" class="headerlink" title="3.地震射线"></a>3.地震射线</h3><h4 id="（1）地震射线的基础理论"><a href="#（1）地震射线的基础理论" class="headerlink" title="（1）地震射线的基础理论"></a>（1）地震射线的基础理论</h4><p>​				i.费马原理Fermat’s principle</p>
+<p>​					各向同性的连续介质中，扰动沿着一条走时为稳定值的路径传播。</p>
+<p>​					平面下：方程和波的慢度有关，慢度：$\sigma &#x3D; \mu s$</p>
+<p>​					球面下：沿连接球心和最低点的直线对称，速度和半径有关</p>
+<p>​				ii.惠更斯原理Huygen-Fressnel principle</p>
+<p>​					波阵面上的点可视为新的波源</p>
+<p>​				iii.斯内尔定律 Snell’ Law</p>
+<p>​					经过间断面时地震波会发生折射：$\sin i_1 &#x2F;v_1 &#x3D;\sin i_2&#x2F;v_2&#x3D;p$，p 为射线参数 </p>
+<p>​					球情况下还要考虑到曲率，乘上球面半径</p>
+<p>​				iv. p 波和 sv 波都会反射折射p 波和 sv 波，但是 sh 波只会反射折射 sh 波</p>
+<h4 id="（2）地震走时"><a href="#（2）地震走时" class="headerlink" title="（2）地震走时"></a>（2）地震走时</h4><p>首波：head wave震中距大于某个值时最快到达的波，折射后沿下层介质的表面传播，一般来说下层介质的速度更快，所以传播速度快</p>
+<p>即出射角 r&#x3D;90°时，折射波沿界面传播，这时的入射角称为临界角。首波时间的相关计算：先沿着一定角度入射到交界面，然后沿着交界面运动，最后再返回原介质</p>
+<p>直达波：直接传递到达的波</p>
+<p>本多夫定律 Benndorff：射线参数 p 就是走时曲线的斜率</p>
+<p>地球如果越往下地震波速度越慢，会形成阿基米德螺线，所有地震射线都会进入地心，这是不可能的</p>
+<p><strong>地震射线弯曲的曲率半径</strong>如何计算：$1&#x2F;rho &#x3D; ?$</p>
+<p>地球内部速度异常的影响：如果地球内部有些区域速度下降，会出现地面上一片区域接收不到射线，叫做地震影区，相应的走时曲线会出现一段空白，速度随着半径减小下降较快，射线突然向地心偏转；如果接触到高速区域，曲率半径减少更快折回地表，会出现震中距 比正常速度分布小，走时曲线出现折返打结现象，形成一个焦点</p>
+<p><img src="https://s1.imagehub.cc/images/2024/11/04/9f6439ba6d5058958e1b5518c01ba779.jpg" alt="速度"></p>
+<p>首波的特性：存在两个临界点，第一个临界点，震中距小于该点时，不会出现首波；第二个临界点，震中距大于该点时，首波将会第一个出现</p>
+<p>直达波：$t&#x3D;\sqrt{x^2+h^2}&#x2F;v \approx x&#x2F;v ,x\gg h$</p>
+<p>反射波：$t&#x3D;\sqrt{x^2+(2H-h)^2}&#x2F;v\approx x&#x2F;v,x\gg 2H-h$ 可见震中距越大越接近直达波</p>
+<h4 id="（3）震相图seismic-phases"><a href="#（3）震相图seismic-phases" class="headerlink" title="（3）震相图seismic phases"></a>（3）震相图seismic phases</h4><p><img src="https://s1.imagehub.cc/images/2024/11/05/e9278f86240b693058ce469a7397d7ee.jpg" alt="符号大全"></p>
+<p><img src="https://s1.imagehub.cc/images/2024/11/04/4010fc2d85b2368e0ac082ea411fa924.jpg" alt="符号大全"></p>
+<p><img src="https://s1.imagehub.cc/images/2024/11/04/b853dbd26579c47a461a92cc81d30e5a.jpg" alt="示意图"></p>
+<p>地震发生后在地球中传播的地震波，根据台站与震源的距离，可把各震相简单分为区域震相(震源到台站距离小于2000 km)与远场震相(震源到台站距离大于2000 km)</p>
+<p>上图为远震震相的示意图</p>
+<p><img src="https://s1.imagehub.cc/images/2024/11/04/09f05b414318324aa6b2a0f681c27678.jpg" alt="远震震相"></p>
+<p><img src="https://s1.imagehub.cc/images/2024/11/04/2c233554f1ff5637b44f705b88749c11.jpg" alt="v2 b945e7b2392df7b048e5a5645f7da625 r"></p>
+<p>以上为区域震相的示意图</p>
+<p>震源位置判断：s 波和 p 波的时差可以确定地震距离，三个台站可以确认位置</p>
+<h3 id="4-地震"><a href="#4-地震" class="headerlink" title="4.地震"></a>4.地震</h3><h4 id="（1）基础概念-1"><a href="#（1）基础概念-1" class="headerlink" title="（1）基础概念"></a>（1）基础概念</h4><p>余震是地震结束后进入平衡的调整过程</p>
+<p>震源在地面上的投影叫做震中，是一个区域</p>
+<p>地震成因的学说：i.断层说 ii.相变说 iii.岩浆冲击说</p>
+<p>地震活动的四个阶段：应力积累期，活动加速期，能量释放期，应力调整期</p>
+<h4 id="（2）地震的强度"><a href="#（2）地震的强度" class="headerlink" title="（2）地震的强度"></a>（2）地震的强度</h4><h5 id="i-烈度"><a href="#i-烈度" class="headerlink" title="i.烈度"></a>i.烈度</h5><p>地震造成的影响和破坏的大小，由宏观现象简单判断，分为 12 度麦加利地震烈度表</p>
+<p>烈度不能反映地震本身的大小，一般只能用在灾害抗震领域</p>
+<h5 id="ii-震级"><a href="#ii-震级" class="headerlink" title="ii.震级"></a>ii.震级</h5><p>里克特震级 Richter，选择一个标准震级$A_0$，并且做比较：$M_L&#x3D;\log_{10}A-2.76\log_{10}\Delta-2.48$</p>
+<p>里克特选择的标准地震，实在震中距$\Delta&#x3D;100$公里处记录到的地震波水平分量最大振幅为 1 微米，使用的是伍德安德森地震仪</p>
+<p>每级地震能量差距为 32 倍</p>
+<p>体波震级：$Mb &#x3D; \log(A&#x2F;T)+Q(h,\Delta)$ T 为振动周期，Q 为震源深度和震中距的经验修正项</p>
+<p>频度震级关系：$\log N &#x3D; a-bM$ N为震级大于等于 M 的地震数，ab 为经验常数</p>
+<p>余震分布符合奥姆利定律 Omori‘s Law</p>
+<h3 id="5-震源"><a href="#5-震源" class="headerlink" title="5.震源"></a>5.震源</h3><p>弹性回跳理论Elastic Rebound：地壳变形时，能量以弹性应变能的形式储存在岩石中，直到超过弹性限度，岩石发生破裂（断层），转换为热，破碎能和地震能</p>
+<h4 id="（1）断层"><a href="#（1）断层" class="headerlink" title="（1）断层"></a>（1）断层</h4><p>Faults</p>
+<p><img src="https://s1.imagehub.cc/images/2024/11/05/955c6b733f8cc755fc70e0b90e166dbc.png" alt="沙滩球"></p>
+<p>（p 是挤压 t 是拉伸）</p>
+<p>正断层Normal Fault：由于拉力地层相对下降</p>
+<p>逆断层Reverse Fault：由于挤压地层相对上升</p>
+<p>走滑断层Strike-Slip Fault:断层沿水平方向华东，常见于板块边界</p>
+<p>冲断层（thrust fault ）在地质术语中通常称逆冲断层，是指断层面倾角小于30度的低角度逆断层。冲断层一般总是将老地层推覆到较年轻的地层之上，造成地层在垂向上的重复叠置</p>
+<p><img src="https://s1.imagehub.cc/images/2024/11/05/331b81b93cb44570c8931450a75855dc.png" alt="沙滩球"></p>
+<h4 id="（2）震源物理"><a href="#（2）震源物理" class="headerlink" title="（2）震源物理"></a>（2）震源物理</h4><p>单力偶Single Couple：最简单模型，假设震源的力源为一个简单的力偶，用处很少</p>
+<p>双力偶Double Couple：由两个正交的单力偶组成，使得整体系统没有净力矩，但是会产生剪切形变，地震辐射模式：能产生非常好的辐射模式，华东会产生地震矩张量，描述了断层上的力矩变化；从作为震源的角度来说，不仅解释了断层的剪切破裂，还能较好的描述震源的应力降</p>
+<p>地震矩张量Moment Tensor：$M_{pq}$ p代表力的方向 q 代表力臂的方向 $M_{pq}(t)&#x3D;M_0(t)(e_pv_q+e_qv_p)$ 其中 e 为错位方向 v 为断层法向 $M_0&#x3D;\mu DA$ ，特性：trace 为 0 ，最大最小特征值互为相反数，中间特征值为 0</p>
+<p>从震源机制中不能确定真正发震断层面</p>
+<p><img src="https://s1.imagehub.cc/images/2024/11/05/22e6ed1b312beceee7547fe638e126cc.png" alt="沙滩球和矩阵"></p>
+<p>沙滩球：黑色代表压缩，白色代表拉伸</p>
+<p>球坐标和 NEZ坐标变换：</p>
+<p><img src="https://s1.imagehub.cc/images/2024/11/05/cda41ddb1d0465f8dbe3460bdce1a014.png" alt="坐标变换"></p>
+<p>应力降Stress Drop ：震前震后断层上应力的变化，用来衡量释放的能量</p>
+<p>频率震级饱和Magnitude Saturation：随着震级增加，高频成分会明显衰减</p>
+<p>CLVD：Compensated Linear Vector Dippole，是一种地震源模型，用于描述某些复杂的震源机制，特别是那些不完全符合剪切破裂（双力偶模型）或爆炸（等方性）的地震。CLVD通常用于解释那些包含非双力偶（Non-double Couple）成分的地震源机制。</p>
+<h3 id="6-地球震荡"><a href="#6-地球震荡" class="headerlink" title="6.地球震荡"></a>6.地球震荡</h3><h4 id="（1）基础概念-2"><a href="#（1）基础概念-2" class="headerlink" title="（1）基础概念"></a>（1）基础概念</h4><p>地球自由振荡free oscillation，是指地球在受到外力（如地震）激发后，以自身固有频率振动的现象。这些振荡可以被视为驻波（谐波harmonic），即两个相反方向传播的波的干涉</p>
+<p>地球的固有模式 normal mode，地球内部的任何波动都可以由地球的正常模式的叠加表示，且固有模式之间互不干扰具有正交性和唯一性（normal mode 可以作为地震波函数空间的完备正交基），可以是球型的或环型的；地震之后几分钟就	会出现，周期小于 54 分钟，振幅小于 1mm，在一次大地震之后持续数月都可以观测到</p>
+<p>其实是连带 Legendre 函数和球谐函数</p>
+<p>模式表示：T 代表扭转 S 代表拉伸</p>
+<p>T 只有剪切波分量没径向分量，不会造成体积变化，不影响重力场；S 二者都有，会影响重力场</p>
+<p>​		$_nT_l^m$ n 表示内外径向的多少节点振动为 0，l 表示纬线方向的，m，表示经线方向的</p>
+<p><img src="https://s1.imagehub.cc/images/2024/11/05/0a59ef5bc80edc0077c6a91d371ef479.png" alt="两种不可能的模式"></p>
+<h4 id="（2）模式分裂"><a href="#（2）模式分裂" class="headerlink" title="（2）模式分裂"></a>（2）模式分裂</h4><p>产生原因：</p>
+<p>自转：沿自转方向传播的波更快，主要影响长周期</p>
+<p>椭率：地球是扁的，沿赤道的运动更长一些</p>
+<p>横向不均匀性</p>
+<h2 id="二-重力学"><a href="#二-重力学" class="headerlink" title="二.重力学"></a>二.重力学</h2><h3 id="1-地球的尺寸和形状"><a href="#1-地球的尺寸和形状" class="headerlink" title="1.地球的尺寸和形状"></a>1.地球的尺寸和形状</h3><p>质量：$M&#x3D;6 \times 10^{27}g$</p>
+<p>半径：$R&#x3D;6371km$</p>
+<p>平均密度：$\rho  &#x3D;5.5g&#x2F;cm^3$</p>
+<p>地球是个椭球</p>
+<p>椭率：$f &#x3D; \frac{a-c}{a}$，其中 a 是长轴 c 是短轴</p>
+<h3 id="2-重力势"><a href="#2-重力势" class="headerlink" title="2.重力势"></a>2.重力势</h3><p>和重力加速度g的关系为：$g&#x3D;-\nabla U$</p>
+<p>​	单位为伽利略：$1\rm{Galileo} &#x3D; 1 cm&#x2F;s^2$</p>
+<p>地球内部的引力和外部的会有一个一阶导数不连续</p>
+<p><img src="https://s1.imagehub.cc/images/2024/11/05/6aff8bc3c127d8e234c8015f5a3e589d.png" alt="重力势"></p>
+<p>其中J n成为n 级带谐系数， C 和 S 成为 n 级 m 阶田谐系数，1 表示集中在重心时的引力位</p>
+<p>当忽略精度变化和高阶项时，$J_2$成为最重要的一项，他直接与地球形状有关，是大地测量学中的重要参数，<strong>设 ABC 为相对于 xyz 轴的转动惯量</strong>，那么 $J_2$ 可以表示为$J_2 &#x3D; \frac{C-A}{Ma^2}$ </p>
+<p>第一项是来自质心点（把地球看作正球形分布）第二项来自于地球的椭球形状（跟纬度有关）第三项来自于地球局部的质量分布（局部重力异常）</p>
+<p>地球的静重力位为（马古拉公式MacCullagh）：<br>$$<br>V&#x3D;-\frac{GM}{r}-\frac{G}{2r^3}(A+B+C-3I)<br>$$<br>地球的自转离心产生的重力位为：<br>$$<br>V’&#x3D;\frac{\omega^2 r^2}{3}[1-P_2(\cos \theta)]<br>$$<br>地球的总重力位为二者相加</p>
+<p>地球的形状为：$r&#x3D;R[1+\epsilon P_2(\cos\theta)]$</p>
+<p>也就是得到的大地水准面，他并不是一个标准的旋转扁球体</p>
+<h3 id="3-重力异常"><a href="#3-重力异常" class="headerlink" title="3.重力异常"></a>3.重力异常</h3><h4 id="（1）基础理论"><a href="#（1）基础理论" class="headerlink" title="（1）基础理论"></a>（1）基础理论</h4><p>相对于大地水准面计算得到的理论重力的差值称为重力异常，正的代表下面的物质多，负的代表下面的物质少，单位伽利略</p>
+<p>大陆不是海平面，所以要先把测量数据校正为海平面的数据，有$\partial g&#x2F;\partial r &#x3D; -0.003086$ 测量的数据必须加上这个乘 h 海拔高度的校正值，该校正考虑到了自由空气中距离不同导致的影响，叫做自由空气校正（free air correction），自由空气校正后的重力异常称为自由空气重力异常</p>
+<p>但是测点和海平面之间并不是空气而是有密度为 $\rho$ 的物质存在的；假设大地大范围平坦，嘉定测点 P 和海平面之间夹了一个水平板子，那么加上平板 $2\pi G\rho h$ 的修正重力后，该校正成为布加校正（Bouguer correction），同理测得的重力异常称为布加重力异常</p>
+<p>修正都用减法</p>
+<p>通常是用 free air 测大地水准面，用布加测地球内部的质量分布</p>
+<h4 id="（2）重力均衡理论"><a href="#（2）重力均衡理论" class="headerlink" title="（2）重力均衡理论"></a>（2）重力均衡理论</h4><p>假定高山下面有一个补偿水平面，从地面到补偿水平面单位面积的质量相等，补偿水平面以下密度各处都相等，这种补偿成为均衡补偿(Isostatic Correction)布加异常加上均衡校正后的重力异常称为均衡异常，均衡异常为 0 说明补偿合理，不为零说明地下的物质分布和假设的不同</p>
+<p>普拉特模型：高山下密度更大</p>
+<p>艾里模型：高山都一样</p>
+<p>二者：山都是漂浮在地幔起来的</p>
+<p><img src="https://s1.imagehub.cc/images/2024/11/08/4ecfafba047b0445bb096eabbced80be.jpg" alt="示意图"></p>
+<p><img src="https://s1.imagehub.cc/images/2024/11/08/d17fc6deb3f765d7e107517f2fc9d051.png" alt="pratt"></p>
+<p><img src="https://s1.imagehub.cc/images/2024/11/08/3af9b539e85a55db2ba16a21e8e16e03.png" alt="airy"></p>
+<h3 id="4-固体潮"><a href="#4-固体潮" class="headerlink" title="4.固体潮"></a>4.固体潮</h3><p>固体潮是地球的固体部分在日月引力下发生形变的过程。</p>
+<p>包括重力固体潮、地倾斜固体潮、应变固体潮、井水水位固体潮、经纬度固体潮和海潮。</p>
+<p>固体潮会导致重力场的变化，总的变化是日月引力引起的变化的总和</p>
+<p>潮汐力要考虑的：地球不是刚体，地球会转</p>
+<p>love 数：h：固体潮的潮高和海洋平衡潮的潮高之比；k：由于质量的重新分布而引起的力位变化和引潮力位之比</p>
+<p>志田shida数：l：地壳的水平位移和平衡海潮的水平位移之比</p>
+<p>潮高为：$\delta z &#x3D; (l+k-h)W_2&#x2F;g_0$ $W_2$是引潮力位，也可取$\gamma &#x3D;l+k-h$ </p>
+<p>罗氏极限（Roche limit）是天文学中的一个概念，它描述了一个较小的天体（如卫星或小行星）在接近一个较大的天体（如行星或恒星）时，由于潮汐力作用而开始解体的距离。</p>
+<ol>
+<li><strong>弹性罗氏极限</strong>：这是最小的距离，超过这个距离，一个刚性的卫星在潮汐力的作用下不会被撕裂。如果卫星是弹性的，那么在接近这个极限时，它可能会发生变形，但不会被撕裂。</li>
+<li><strong>流体罗氏极限</strong>：对于流体卫星（如没有固体表面的小行星或彗星），这个极限是卫星在潮汐力作用下开始解体的距离。如果卫星进入这个距离内，它将被潮汐力撕裂成碎片。</li>
+<li><strong>刚性罗氏极限</strong>：这是针对刚性卫星的概念，与弹性罗氏极限类似，但考虑的是卫星在不发生任何变形的情况下能够接近主天体的最近距离。</li>
+</ol>
+<h3 id="5-地球的运动"><a href="#5-地球的运动" class="headerlink" title="5.地球的运动"></a>5.地球的运动</h3><p>岁差：天极以 25700 年为周期绕黄道面的极点转动</p>
+<p>章动：天极相对黄极做一种点头式的运动</p>
+<p>钱德勒摆动（Chandler wobble），也称为钱德勒摆动或钱德勒振荡，是指地球自转轴相对于地球表面的小幅度、周期性的摆动。这种摆动主要是由于地球内部的质量分布变化引起的。地球不是一个完美的刚体，其内部物质的移动，如地幔对流、海洋和大气的流动，以及冰川和地壳的变动，都会影响地球的转动惯量，从而引起自转轴的摆动。</p>
+<p>作业：(1) solid earth tide; (2) tidal force; (3) Love number; (4) Shita number; (5) precession;<br> (6) nutation; (7) heat flow;(8) thermal conductivity; (9) thermal diffusivity; (10) geothermal gradient.</p>
+<h2 id="三-地电学"><a href="#三-地电学" class="headerlink" title="三.地电学"></a>三.地电学</h2><h3 id="1-电学基础"><a href="#1-电学基础" class="headerlink" title="1.电学基础"></a>1.电学基础</h3><h4 id="（1）库仑定律"><a href="#（1）库仑定律" class="headerlink" title="（1）库仑定律"></a>（1）库仑定律</h4><h4 id="（2）电场电势"><a href="#（2）电场电势" class="headerlink" title="（2）电场电势"></a>（2）电场电势</h4><h4 id="（3）导电类型"><a href="#（3）导电类型" class="headerlink" title="（3）导电类型"></a>（3）导电类型</h4><p>电子导电（Electronic Conduction）：这种导电类型主要发生在金属中，电子作为主要的电荷载体。在金属晶格中，自由电子在电场作用下移动，从而实现电流的流动</p>
+<p>半导体（Semiconduction）：半导体的导电性能介于金属和绝缘体之间。其导电能力会受到杂质或外部条件（如温度）的影响</p>
+<p>电介质（Dielectric Conduction &#x2F; Insulation）（绝缘）：介电质材料是绝缘体，通常导电能力极低。在高电场或击穿条件下，介电质可能会发生少量导电</p>
+<p>电解导电（Electrolytic Conduction）：电解导电主要发生在水溶液中，如氯化钠溶液，通过阳离子和阴离子作为电荷载体来实现导电。电解导电取决于溶液中离子的迁移率</p>
+<h3 id="2-地球的电学特征"><a href="#2-地球的电学特征" class="headerlink" title="2.地球的电学特征"></a>2.地球的电学特征</h3><p>地球上的一些放电现象：宇宙射线和闪电</p>
+<p>Cosmic rays are subatomic particles with very high energy.</p>
+<p>Thunderstorms, and the causes of lightning, are not yet fully understood.</p>
+<p>地球：地球可以简单的近似视为一个均匀的导体。导体表面上所有点的电势都相同，即它是一个电势等势面。一般把地面的电势定义为 0。因此，一个带正电的物体相对于地面有一个正的电势差，而一个带负电的物体有一个负的电势差。</p>
+<p>不同的岩石和结构有不同的电导率，因此可以通过测量大地电导率进行勘探</p>
+<h3 id="3-电勘探"><a href="#3-电勘探" class="headerlink" title="3.电勘探"></a>3.电勘探</h3><p>阿尔奇定律（Archies law）是适用于无粘土沉积物的一个经验性定律。该定律描述了含水岩石电阻率$\rho$ 与岩石孔隙度（porosity）$\phi$之间的关系，S 为含水量，$\rho_w$是地下水的电阻率：<br>$$<br>\rho &#x3D; \frac a{\phi^m S^n}\rho_w<br>$$<br>amn都是经验参数，一般来说 $0.5 \le a \le 2.5 , 1.3\le m\le 2.5, n\approx 2$ </p>
+<p>1&#x2F;3孔隙充水n大约是 2，</p>
+<p>Self-potential（spontaneous potential）自电位：有的是由于人为干扰环境产生的，如埋地线缆，排水管，垃圾填埋等。有的是由于机械或电化学作用。电解液穿过窄管时，管端之间可能会出现电位差，可以在渗水或者地下水流动中观察到。还有能斯特电位，也就是由于离子浓度的不同产生扩散导致的电位差。金属和电解质接触也会产生接触电势差。还有氧化还原反应也会导致电势差</p>
+<p>四电极法勘探：用来探测 SP 需要高阻抗的灵敏电压表，使用非极化电极，如硫酸铜中的铜棒，分为两种常用测量方法，等距测量的梯度法（Gradient method），但是会导致误差的积累；还有一种全场法（Total field method）固定一个电极不停的测量外面的，这个方法的劣势是导线不够长但是灵活且数据质量更高。</p>
+<p><img src="https://s1.imagehub.cc/images/2024/11/09/9aadafef63fd17cf003527af66bfb554.jpeg" alt="四电极法"></p>
+<h3 id="4-Telluric-current-地电流"><a href="#4-Telluric-current-地电流" class="headerlink" title="4.Telluric current 地电流"></a>4.Telluric current 地电流</h3><p>电离层中的电流来自离子的系统运动，这些运动受到各种因素的影响，如每日和每月的潮汐、日照的季节变化以及与11年太阳黑子周期相关的电离周期波动。电流产生具有相同频率的不同磁场，这些磁场在地球表面被观测到，可以从地磁场的长期连续记录中进行分析。电离层效应在地磁场的能谱中表现为不同的峰值，代表从几分之一秒（地磁脉动）到几年的周期。磁场引发波动电流，称为地电流，在地壳和地幔的水平层中流动。目前的模式由几个直径数千公里的巨大螺旋组成，它们相对于太阳保持固定，因此在地球自转时围绕地球移动。大地电流密度的分布取决于水平导电层中电阻率的变化。</p>
+<p><img src="https://s1.imagehub.cc/images/2024/11/09/fe5eaf48260b70f440709f54f00aeca7.png" alt="有可能考试"></p>
+<p><img src="https://s1.imagehub.cc/images/2024/11/09/818b2d14c82bfb5393717101e1d61d82.png" alt="四电极法 测电导率"></p>
+<h2 id="四-地磁学"><a href="#四-地磁学" class="headerlink" title="四.地磁学"></a>四.地磁学</h2><h3 id="1-描述地磁场的量"><a href="#1-描述地磁场的量" class="headerlink" title="1.描述地磁场的量"></a>1.描述地磁场的量</h3><p>XYZ台站为中心的坐标<br>$$<br>X &#x3D; F\cos I\cos D<br>\ Y&#x3D; F\cos I \sin D<br>\Z &#x3D;F \sin I<br>$$<br>FDI总磁场磁偏角（XY平面内）（非偶极磁场的部分贡献的）磁倾角（XY 平面外）<br>$$<br>F&#x3D;\sqrt{X^2+Y^2+Z^2}<br>\ D&#x3D;\arctan(Y&#x2F;X)<br>\I &#x3D; \arctan(Z&#x2F;\sqrt{X^2+Y^2})<br>$$<br>H水平分量$H&#x3D;\sqrt{X^2+Y^2}$</p>
+<h3 id="2-地球磁场的典型特征"><a href="#2-地球磁场的典型特征" class="headerlink" title="2.地球磁场的典型特征"></a>2.地球磁场的典型特征</h3><p>宏观的表现为偶极磁场，磁力线从南极出发回到北极</p>
+<p>实际上情况很复杂，分为内源场外源场，内源场占据了主要部分，现在大约 91%部分，（其中内源场的 90%来自于偶极磁场，剩下的来自于非偶极磁场）；在地表观测的话主要是内源场，卫星观测主要是外源场；还有一个跟地球自转有关的变化，但是随时间变化的 部分更多来自外源磁场的变化</p>
+<p>地球主磁场可以看做一根磁棒</p>
+<h4 id="（1）简单描述"><a href="#（1）简单描述" class="headerlink" title="（1）简单描述"></a>（1）简单描述</h4><p>简单描述：轴向的偶极磁场，磁轴和自转轴重合，得到磁偏角为 0，地磁 Y 分量也为 0</p>
+<p>m 是地球的磁矩，M 是地球的磁化程度</p>
+<p><img src="https://s1.imagehub.cc/images/2024/11/05/f4c2522135aa4217c478538b0fcc6da4.png" alt="势函数"></p>
+<p><img src="https://s1.imagehub.cc/images/2024/11/05/f050adc6442b411a5764677adeb0abeb.png" alt="可能要考"></p>
+<p>偶极磁场，赤道的强度是两极的一半</p>
+<p>随着海拔升高地磁场强度下降</p>
+<p>赤道只有水平分量，两极只有垂直分量</p>
+<p>实际上地磁场不这样</p>
+<h4 id="（2）实际情况"><a href="#（2）实际情况" class="headerlink" title="（2）实际情况"></a>（2）实际情况</h4><p>偶极磁场有三个项，$g^1_1, g^0_1, h_1^1$ 其中，$g_1^0$是简单描述中的偶极场，最大剩下俩是他的百分之 10 到 20，是 mz 分量；$g_1^1$是 mx 分量；$h_1^1$是my 分量，也就是说是个偏心的偶极磁场，是更客观更真实的</p>
+<p>（ gh 是内源 Gauss 项jk 是外源 Gauss 项）</p>
+<p>而且实际上磁极和地理极点是不重合的，在 11 度左右</p>
+<p>再进一步就是离心偏心偶极磁场，磁轴是不过地球中心的</p>
+<p>可以通过倾角偏角能推断出地磁北极的位置</p>
+<p>地磁场变化幅度频度更大，磁极在 400 年间走了十来个纬度，之前的角度更大</p>
+<p>地磁场一直在变化，是由观测数据推出的，2000 年间绕着地理北极转了一圈，指南针在大时间跨度下不准，要经常做校正</p>
+<p>偶极磁场有西漂，非常明显，磁偏和磁倾角的变化</p>
+<p>非偶极场也在变化，反映了整个地幔相对整个地球旋转的差异</p>
+<h3 id="3-磁勘探"><a href="#3-磁勘探" class="headerlink" title="3.磁勘探"></a>3.磁勘探</h3><p>主要测量地磁表面的磁异常，主要来源于矿石的磁信号的响应特性，跟异常体的形状有关，介质的深度也有关，不同的纬度会导致倾角不一样，也会导致响应不一样，也就是说磁力线是闭合的，会伸出来一块</p>
+<p>埋藏越浅的话能探测的高频部分越多</p>
+<p>居里温度：热失磁的温度点</p>
+<p>居里深度：达到居里温度的深度</p>
+<h3 id="4-古地磁"><a href="#4-古地磁" class="headerlink" title="4.古地磁"></a>4.古地磁</h3><p>虚地磁极：一般指古地磁极，通过 10k 年为窗口求得</p>
+<p>磁性矿物：可以看成磁棒，磁分子排列的过程称为磁化过程</p>
+<p>物质放到地磁场里面慢慢被磁化，反过来还会影响地球磁场</p>
+<p>顺磁性：容易被磁化也容易失去</p>
+<p>铁磁性：被磁化后不会轻易失去磁性</p>
+<p>抗磁性：不会被磁化</p>
+<p>背景场的角度会影响古地磁的分布，找到古地磁倾角</p>
+<p>古地磁的两个基本假设：</p>
+<p>​			i.轴向的偶极子场假定：GAD 假设，时间尺度足够长的时候，磁轴可以近似为自转轴，地球磁场一直都是轴向的偶极子场 有$\tan I &#x3D; 2\tan \phi &#x3D;2\cot \theta$ </p>
+<p>​			ii.剩磁的方向跟形成时候的背景场方向一致（能推断出当时的磁极）</p>
+<p>深入研究的时候，不用这个假定了就，不是完全确定的</p>
+<p>虚地磁极 VGP Virtual Geomagnetic Pole：实际上是跟旋转轴不一致</p>
+<p>古地磁极PP Paleomagnetic Pole：单纯的轴向的偶极场</p>
+<p>古地磁数据获取：</p>
+<p>​			i.样品</p>
+<p>​			ii.剩磁测量</p>
+<p>​			iii.样品退磁</p>
+<p>​			iv.数据预处理</p>
+<p>​			v.统计分析</p>
+<p>​			vi.误差分析</p>
+<p>沉积颗粒剩磁：沉积的时候颗粒携带了当时背景的磁场</p>
+<p>化学剩磁：化学反应生成新结构的时候，携带了背景场的信息（如钟乳石）</p>
+<p>磁场记录仪：flux-gate 记录仪proton-precession记录仪等</p>
+<p>退磁加磁的磁化路径是不一样的，没法精确的复原</p>
+<p>检验方法：</p>
+<p>​			褶皱检验：<br>​			砾石检验：<br>​			倒转检验：<br>​			烘烤接触检验：</p>
+<p>​			过了褶皱检验与烘烤检验，仅说明是在褶皱 或火成岩侵入之前获得的剩磁，而并不能说明ChRM就 是主要剩磁;但没有通过这两种检验，则说明ChRM肯 定不是主要剩磁!</p>
+<p>​			通过了倒转检验，说明剩磁记录了某一地质历 史时期不同地磁极性的信息. 没有通过倒转检验，则 说明正、反极性至少有一ChRM为次要剩磁。</p>
+<p>古地磁极可靠性判断标准：</p>
+<p>​			1、地层年代-误差为上下15Myr</p>
+<p>​			2、至少6 个采样点、每个采样点至少6块独立定向标本，每 个采样点的95置信度检验小于10度(新生代)或15度(中 生代)</p>
+<p>​			3、必须有退磁处理的数据 </p>
+<p>​			4、必须通过褶皱或倒转等检验 </p>
+<p>​			5、选择稳定地块的古地磁极</p>
+<p>​			 6、相近时代正负极性必须共扼 </p>
+<p>​			7、古地磁极与现今地磁极不重合</p>
+<p>不同大陆迁移的路径不一样，但是路径跟古地磁的极移路径相符合</p>
+<p>古地磁可以构建板块漂移的重建，是板块构造学说的一个非常重要的数据来源</p>
+<p>地磁场发生过多次地磁倒转，中间还有极性的过渡阶段</p>
+<p>​		洋中脊的古地磁对称条带，因为喷出来的是新的地磁记录，两边是旧的</p>
+<h3 id="5-地球发电机"><a href="#5-地球发电机" class="headerlink" title="5.地球发电机"></a>5.地球发电机</h3><p>​		地球发电机理论Geodynamo：Elsasser 提出，来自液态外核的电流感应，液态外核的对流，地球外核相对整个地球的旋转存在一个差异，由于液态的外核在逐渐冷却，外核在减小，最终发电机机制会停止，磁场消失</p>
+<p>但是地球磁场强度实际上没有一直在减少，是在一直变化的</p>
+<p>地磁场的模型经历了很久的变化，极化，热剩磁，电剩磁，霍尔效应。。。最终留下的是地球发电机模型</p>
+<p>双发电机模型：需要一个初始的推动力，就可以激发</p>
+<p>地球发电机方程：Maxwell，欧姆定律，流体方程，连续性方程，poisson 方程，广义热方程，状态方程</p>
+<p>可以解释地球磁极倒转的问题 （1995 年）</p>
+<p>差异转动的验证：通过地震射线判断的，地震射线穿过地核50 年前和 50 年后不一样</p>
+<h2 id="五-地热学"><a href="#五-地热学" class="headerlink" title="五.地热学"></a>五.地热学</h2><h3 id="1-地球内部的热源"><a href="#1-地球内部的热源" class="headerlink" title="1.地球内部的热源"></a>1.地球内部的热源</h3><p>（1）地球早期积累和分化产生的热量</p>
+<ul>
+<li>地球在形成初期，由于原始物质的积累（吸积）和随后的分化（物质根据密度分层）过程，产生了大量的热量。这些热量主要来自于引力势能的转换，即物质向地球中心聚集时释放的能量。</li>
+<li>这些早期积累和分化产生的热量，经过数十亿年的时间，仍在缓慢地从地球内部传递到地表。这一过程非常缓慢，因为地球内部的热传导效率相对较低，尤其是地幔中的固态岩石。</li>
+</ul>
+<p>（2）放射性物质衰变</p>
+<ul>
+<li><p>地球内部的放射性元素，如铀（U）、钍（Th）和钾（K）的不稳定同位素，通过放射性衰变过程释放热量。这些元素在地球形成时就存在于地球物质中。</p>
+</li>
+<li><p>放射性衰变产生的热量对地球的热能预算有重要贡献。据估计，地球总热流中约有40%来自放射性热生成，而剩余的60%则来自于地球原始积累热量的“世俗冷却”。</p>
+</li>
+<li><p>“世俗冷却”（Secular Cooling）这个术语通常用来描述地球或其他天体自其形成以来随时间逐渐冷却的过程。</p>
+</li>
+</ul>
+<p>（3）地球地壳</p>
+<ul>
+<li><p><strong>海洋地壳</strong>：相对较薄，平均厚度约为10公里，具有相对均匀的地层结构，主要由玄武岩组成，包括枕状熔岩、层状岩墙、更大块的辉长岩和超镁铁质岩石（地幔岩石）。</p>
+</li>
+<li><p><strong>大陆地壳</strong>：较厚，厚度在20-90公里之间，平均约35公里，组成高度变化，主要由类似花岗岩的岩石组成。</p>
+</li>
+<li><p>地幔主要由超镁铁质岩石（如橄榄岩）组成，是地球体积最大的部分。</p>
+</li>
+<li><p><strong>外核</strong>：呈液态，因此没有S波（横波）通过。</p>
+</li>
+<li><p><strong>内核</strong>：呈固态，由铁-镍金属合金组成。</p>
+</li>
+<li><p>地球的内部结构不仅基于地震波速的变化，还与地球的组成和流变学特性有关。</p>
+</li>
+</ul>
+<h3 id="2-热的传播"><a href="#2-热的传播" class="headerlink" title="2.热的传播"></a>2.热的传播</h3><h4 id="（1）传播方式"><a href="#（1）传播方式" class="headerlink" title="（1）传播方式"></a>（1）传播方式</h4><p>地壳和地幔的热传递机制，包括辐射、传导和对流</p>
+<ul>
+<li>在地球表面，辐射是热量传递的主要方式，尤其是在地球表面和大气之间。地球表面吸收太阳辐射后，以长波辐射的形式将热量释放到大气和太空中。</li>
+<li>在地球的固体部分，包括地壳和上地幔的岩石中，热量主要通过传导传递。传导涉及分子振动的传递，热量从高温区域传递到低温区域。地壳和地幔的热导率决定了热量传导的效率。</li>
+<li>地幔中的热量传递主要通过对流进行。地幔对流是由于地球内部热量的积累导致物质密度差异，较热的物质上升，较冷的物质下沉，形成循环。这种对流是板块构造运动的主要驱动力。</li>
+</ul>
+<h4 id="（2）热流"><a href="#（2）热流" class="headerlink" title="（2）热流"></a>（2）热流</h4><ul>
+<li>热流是指从地球内部通过地壳传递到地表的热能流率，通常以每平方米每秒的焦耳数（W&#x2F;m²）或毫瓦特数（mW&#x2F;m²）来表示。</li>
+<li>热流的测量通常通过在地表钻孔并测量孔内温度梯度，然后使用地质热导率数据来计算热流。这种方法基于傅里叶热传导定律，即热量流动与温度梯度成正比。</li>
+<li>海洋地壳较薄，热流值通常较高，而大陆地壳较厚，热流值较低。海洋热流的平均值约为92 mW&#x2F;m²，而大陆热流的平均值约为67 mW&#x2F;m²。</li>
+<li>地幔对流可以通过Rayleigh-Benard对流来理解，这是一种由于底部加热而产生的对流模式。在地幔中，这种对流是由于地球内部放射性衰变产生的热量引起的。受到地幔的粘度、热导率和密度变化的影响。</li>
+<li>Thermal Budget：是指地球系统中产生和散失热量的平衡状态</li>
+<li>热流测量是地球物理学中的一个重要工具，用于量化从地球内部通过地壳传递到地表的热量。这种测量通常通过在地表钻孔并测量孔内的温度梯度来实现，然后结合地层的热导率来计算热流值。热流值通常以毫瓦特每平方米（mW&#x2F;m²）为单位，它反映了地球内部热能的释放速率。</li>
+<li>海洋热流是指从海底地壳传递到海洋底部的热量流率。这个热流与海洋板块的年龄有直接的关系。在海洋中，新形成的地壳（例如在中洋脊）较热，因此热流较高。随着板块远离中洋脊，它们逐渐冷却，热流随之降低。这种关系可以通过海洋板块的年龄和热流数据来观察和量化。</li>
+<li>海洋热流不仅与板块年龄有关，还与海洋的平均深度有关。海洋板块的平均深度和年龄法则（也称为冷却模型）描述了海洋地壳冷却过程中热流与年龄和深度的关系。这个法则基于假设，即海洋地壳形成后，随着时间的推移和距离中洋脊的增加，其温度逐渐降低，导致热流减少。</li>
+</ul>
+<h4 id="（3）地壳地幔热交换"><a href="#（3）地壳地幔热交换" class="headerlink" title="（3）地壳地幔热交换"></a>（3）地壳地幔热交换</h4><p><strong>边界层模型</strong>： 边界层模型是用来描述地壳和地幔之间热交换的一种理论模型。在地球物理学中，边界层通常指的是地壳和地幔之间由于物理性质变化而形成的一个过渡区域。在这个模型中，地壳被视作一个较冷、较轻的层，而地幔则是较热、较重的层。边界层模型考虑了地壳和地幔之间的热传导和对流过程，以及它们如何影响地壳的热状态和地温梯度。这个模型有助于我们理解地壳的冷却过程以及地幔对流如何影响地壳的热结构。</p>
+<p><strong>板块模型</strong>： 板块模型是地球物理学中用来描述板块构造活动的基本模型。根据这个模型，地球的岩石圈被划分为若干个刚性的板块，这些板块在地幔对流的驱动下在地球表面移动。板块模型考虑了板块的相互作用，包括板块的分离、汇聚和侧向滑动。这些相互作用是地震、火山活动和山脉形成的主要原因。在热流研究中，板块模型有助于解释不同地区热流值的变化，因为板块的移动和相互作用会影响地壳的热状态和热流的分布。</p>
+<ol>
+<li><strong>分层地幔对流（Layered Mantle Convection）</strong>：<ul>
+<li>分层地幔对流模型假设地球的地幔被一个在660公里深处的不连续面分割成上下两层。上层地幔对流主要驱动板块构造，而下层地幔对流则相对独立。这种模型认为，地幔内部的物质和热量主要在各自的层内循环。</li>
+</ul>
+</li>
+<li><strong>全地幔对流（Whole Mantle Convection）</strong>：<ul>
+<li>全地幔对流模型认为整个地幔都参与对流循环，没有明显的分层。在这种模型中，地幔物质可以从地幔底部一直上升到地幔顶部，然后再下沉，形成一个连续的循环。这种模型可以解释地幔内部的大规模对流模式和地幔柱（mantle plumes）的形成。</li>
+</ul>
+</li>
+<li><strong>混合地幔对流模型（Hybrid Mantle Convection）</strong>：<ul>
+<li>混合地幔对流模型结合了分层地幔对流和全地幔对流的特点。这种模型认为，地幔内部存在两种不同尺度的对流：小尺度的对流主要在上层地幔进行，而大尺度的对流则涉及整个地幔。这种模型试图解释地幔内部复杂的对流模式和地幔柱的形成。</li>
+</ul>
+</li>
+<li><strong>地幔柱（Mantle Plumes）</strong>：<ul>
+<li>地幔柱模型是一种特殊的地幔对流模型，它关注地幔内部热物质的上升流，这些上升流被称为地幔柱。地幔柱通常起源于地幔深处，甚至可能与地核附近的热量有关。地幔柱可以穿透地幔的660公里不连续面，到达地幔顶部并影响板块构造和火山活动。</li>
+</ul>
+</li>
+<li><strong>拉瓦灯模型（Lava Lamp Model）</strong>：<ul>
+<li>拉瓦灯模型是一种形象的地幔对流模型，它通过模拟地幔内部的对流模式来解释地幔柱的形成。在这个模型中，地幔内部的热物质像拉瓦灯中的蜡一样上升和下沉，形成复杂的对流模式。</li>
+</ul>
+</li>
+</ol>
+<h4 id="（4）海洋岩石圈"><a href="#（4）海洋岩石圈" class="headerlink" title="（4）海洋岩石圈"></a>（4）海洋岩石圈</h4><p><strong>海洋岩石圈的热结构</strong>： 海洋岩石圈的热结构是指海洋地壳和上地幔的热状态和温度分布。这个结构对于理解海洋板块的构造活动、海底扩张以及与地幔对流的关系至关重要。海洋岩石圈的热结构可以通过地震波速度、地质和地球化学数据来推断。</p>
+<p><strong>地震速度与温度的关系</strong>： 地震波（包括P波和S波）在地球内部的速度可以反映出温度和岩石的物理状态。随着温度的增加，纵波速度减小，但是压力越大越致密的地形，波速越快。因此，通过测量地震波在海洋地壳和地幔中的速度，科学家可以估计这些区域的温度。这种方法称为地震层析成像，它可以帮助构建海洋岩石圈的热模型。</p>
+<p><strong>海洋热流和年龄</strong>： 海洋热流和年龄描述了海洋地壳的热流如何随着海洋板块的年龄变化。年轻的海洋地壳（如在中洋脊附近新形成的地壳）具有较高的热流，因为它们刚刚经历过部分熔融，含有较多的热量。随着板块远离中洋脊，热量逐渐散失，热流也随之降低。这个关系通常表现为热流与板块年龄的平方根成反比，这个关系有助于我们理解海洋地壳的冷却过程。</p>
+<h2 id="六-地球板块构造"><a href="#六-地球板块构造" class="headerlink" title="六.地球板块构造"></a>六.地球板块构造</h2><h3 id="1-大陆漂移学说"><a href="#1-大陆漂移学说" class="headerlink" title="1.大陆漂移学说"></a>1.大陆漂移学说</h3><p>证据：大西洋两岸的拼接的连续性，古生物化石的连续性，岩石的结构，年代学，古气候的一致性，地质构造</p>
+<p>大陆漂移是结果，不是原因</p>
+<p>海底扩张和板块构造是原因</p>
+<p>大陆是整体板块的一部分，实际上是板块在运动，不能只看海面以上的大陆</p>
+<p>现在的大陆是联合古陆的碎裂</p>
+<p>板块的边界：洋中脊（海岭）：大西洋洋中脊：慢速扩展；东太平洋隆起：快；印度洋洋中脊</p>
+<p>新的版块在洋中脊生成</p>
+<h3 id="2-板块构造学说"><a href="#2-板块构造学说" class="headerlink" title="2.板块构造学说"></a>2.板块构造学说</h3><p>板块构造学说（和大陆漂移有本质性不同）（对大陆的描述很少）：</p>
+<ul>
+<li><strong>地球表面上由一个个刚性块体组成</strong>（板块Plate）</li>
+<li><strong>绝大多数的构造变形都发生在板块边界，板块内部的变形相对不那么重要</strong>（实际上内部的变形有的也很大，如喜马拉雅）</li>
+<li><strong>整个地球表面的板块边界只有三种：张形divergent，收敛形convergent，转换断层形transform</strong></li>
+<li><strong>新的板块在洋中脊连续不断的生成，与此同时古老的板块在俯冲带处消亡</strong></li>
+</ul>
+<p>地震主要发生在板块边界带</p>
+<p>张形：正断层错动（两边越来越远）</p>
+<p>收敛形：俯冲带（上面错到下面进去了）</p>
+<p>转换断层形：走滑断层（两边错动）</p>
+<p>旧金山（弹性回跳理论）和唐山地震是走滑断层</p>
+<p>火山喷发：爆炸源</p>
+<p>大西洋很年轻</p>
+<p>热点学说：夏威夷等岛链的形成</p>
+<p>板块构造：成矿带</p>
+<p>夏威夷是一个活动中心点越往外的岛链越古老，能看出新的板块的生成，像传送带一样随着太平洋板块往外送岛屿</p>
+<p>地幔对流模式：整体对流，部分对流，混合对流</p>
+<p>地幔热柱一般起源于古登堡界面，穿透岩石层在地面形成热点</p>
+<p>板块扩张的地震：正断层</p>
+<p>板块扩张的速度：慢速带产生的地震更强，冷却更快应力积累更大，大部分地震不会在洋中脊上，而是在更固态更弹性化的地方，地层年龄越大发生地震的深度越深</p>
+<p>西太平洋板块俯冲到菲律宾板块，裹挟菲律宾板块俯冲到欧亚板块</p>
+<p>西太平洋板块也俯冲到澳大利亚板块</p>
+<p>东太平洋与美洲板块俯冲带着走滑，带着一个洋中脊（圣 Juan板块），全都冲进去了</p>
+<p>马里亚纳型俯冲带：俯冲角度大，表现为海洋板块冷，年龄大，距离洋中脊远，地幔在粘滞力的作用下，把地幔怼下去，热物质上涌，形成一个楔状的对流环，形成一个<strong>弧后盆地</strong> back-arc，还会挤破岩石层形成火山，还有一个海沟</p>
+<p>安第斯&#x2F;智利型俯冲带：角度相对更小，距离洋中脊更近，会把上层板块形成一个推伏的<strong>叠瓦状</strong>，形成褶皱</p>
+<p>西太平洋以马里亚纳型为主（山西大同和长白山的火山带，华南地区穿透到下地幔了），东太平洋以智利型为主</p>
+<p>四种形式：俯冲穿透回折折叠</p>
+<p><img src="https://s1.imagehub.cc/images/2024/11/14/afe85c600b652fd8ef2970c0a8ad83e5.png" alt="四种俯冲带"></p>
+<p>欧拉矢量：旋转轴和旋转速度组成</p>
+<p>三连点：三个板块间的连接点Triple Junctions</p>
+<p><img src="https://s1.imagehub.cc/images/2024/11/14/e73dfdec4ebe287a6cdb0071c8adc288.png" alt="三连点"></p>
+<p><img src="https://s1.imagehub.cc/images/2024/11/14/bcc314643afa777316dd4060f676b355.png" alt="穷举全部的三连点"></p>
+<p>实际上只有 RRR RRF RTT FTT FFT TTT RFT 这几种</p>
+<p>几何形态是否随时间发生变化，稳定、不稳定</p>
+<p>板块驱动力：洋脊推，海沟拉</p>
+<p><img src="https://s1.imagehub.cc/images/2024/11/14/64e132c443577550a8f0e5bb935deab4.png" alt="驱动力"></p>
+<p>Wilson 旋回：是指大陆岩石圈在水平方向上的彼此分离与拼合运动的一次全过程，分为：胚胎期、幼年期、成年期、衰退期、终结期、遗痕期</p>
+<p>用Geodesy 观测板块运动（卫星）SAR 干涉条纹，描述了地表的形变</p>
+<h2 id="七-一些名词解释习题"><a href="#七-一些名词解释习题" class="headerlink" title="七.一些名词解释习题"></a>七.一些名词解释习题</h2><p>normal fault,正断层，上盘相对下降，下盘相对上升的断层称正断层，主要是受到拉张力和重力作用形成的</p>
+<p>thrust fault , 逆断层，上盘上升，下盘相对下降的断层称为逆断层，主要由水平挤压与重力作用而形成</p>
+<p>strike slip fault, 走滑断层，又称横移断层、走向滑动断层，其作用的应力是来自两旁的剪切力作用，两盘顺断层面走向相对移动，而无上下垂直移动</p>
+<p>fault plane, 断层面，岩层或岩体破裂错开，沿两盘发生相对移动的面，称断层面</p>
+<p>source time function，震源时间函数，紧挨震源断层面的质点在地震错动过程中,其位移速度随时间变化的函数</p>
+<p>focal sphere，震源球，地震学中用来描述地震发生的位置和深度，地震发生时地下岩石破裂释放能量的区域，通常用球形来描述</p>
+<p>surface wave，面波，体波在地表衍生而成的次生波，沿两种介质的分界面而传播，一般沿地表传播，振幅随深度增加而衰减，能量集中在介质分界面，破坏性比较强</p>
+<p>dispersion，频散，面波速度随着周期而变化，成为面波频散。周期越大的速度越大为正频散，周期越大速度越小的为倒频散，除自由表面的瑞利面波无频散外，所有的地震波面都具有频散特性</p>
+<p>group velocity，群速度，由于频散，各种频率的波以各自速度传播，相互叠加，形成合震动，其振幅不断变化用其极大值速度表征其传播速度，该速度为群速度，即波群整体移动速度。波传播时能量与振幅平方成正比，绝大部分能量集中于振幅极大处，因此，群速度也是能量和信号的传播速度</p>
+<p>phase velocity，相速度，单色简谐波传播时，其同向面传播的速度</p>
+<p>solid earth tide，固体潮是由于月球和太阳的引力作用，导致地球固体部分（如岩石和土壤）发生周期性形变和变位的现象</p>
+<p>tidal force，潮汐力是由于大质量天体（如月球和太阳）对地球不同部位施加的引力差异，导致海洋和固体地球发生形变的力</p>
+<p>Love number，h：固体潮的潮高和海洋平衡潮的潮高之比；k：由于质量的重新分布而引起的力位变化和引潮力位之比</p>
+<p>Shida number，l：地壳的水平位移和平衡海潮的水平位移之比</p>
+<p>precession，岁差是地球自转轴的周期性变化，导致赤道平面与公转平面（黄道平面）之间的角度变化。主要是由于太阳和月球对地球赤道隆起的引力造成的，该现象约每26000年循环一次</p>
+<p>nutation，进动是指地球自转轴在岁差运动中的小幅起伏或震荡，周期较短，一般为18.6年。它是由于月球引力引起的，导致地球自转轴的摆动</p>
+<p>heat flow，热流是单位时间内通过单位面积传导的热量，通常以瓦特每平方米（W&#x2F;m²）表示</p>
+<p>thermal conductivity，热导率是材料传导热量的能力的量度，定义为单位温度梯度下单位时间内通过单位面积的热流。其单位是瓦特每米每开尔文（W&#x2F;(m·K)）</p>
+<p>thermal diffusivity，热扩散率是材料导热能力与热容比的度量，表示热传导的相对速度</p>
+<p>geothermal gradient，地热梯度是指地表以下温度随深度变化的比例，通常以°C&#x2F;km表示</p>
+<p>地磁偏角，地磁场同地球真实北极方向之间的夹角</p>
+<p>地磁倾角，指地磁场的磁力线与地面水平面之间的夹角</p>
+<p>地磁要素，‌是指表示地球磁场方向和大小的物理量，主要包括磁偏角（D）、磁倾角（I）、水平分量（H）、北分量（X）、东分量（Y）、垂直分量（Z）和总磁场强度（F）</p>
+<p>磁化率，表示物质在外加磁场作用下被磁化的程度，是物质磁化强度与外加磁场强度之比</p>
+<p>磁导率，表示物质对于磁场的导通能力，是磁感应强度与磁场强度之比</p>
+<p>Telluric currents，地电流，指在地球地壳和海洋中自然存在的电流，通常由地球磁场的时间变化、地壳运动或太阳活动等引起</p>
+<p>Skin depth，趋肤深度，指电磁波在导体中传播时，电流密度或电磁场强度衰减到其在表面值的1&#x2F;e（约36.8%）所对应的深度。</p>
+<p>Apparent resistivity，视电阻率，是在电法勘探中，根据测量得到的电位差和电流强度计算出的电阻率值</p>
+<p>Electrical conductivity，表示材料传导电流能力的物理量，是电阻率的倒数</p>
+<p>In-phase component，在交流电路或信号处理中，指与参照信号在相位上完全一致的那一部分分量</p>
+
+  </article>
+  <!-- tag -->
+  <div class="mt-12 pt-6 border-t border-gray-200">
+    
+      
+        <span class="bg-gray-100 dark:bg-gray-700 px-2 py-1 m-1 text-sm rounded-md transition-colors hover:bg-gray-200">
+          <a href="/tags/%E5%9C%B0%E7%90%83%E7%89%A9%E7%90%86/">地球物理</a>
+        </span>
+      
+        <span class="bg-gray-100 dark:bg-gray-700 px-2 py-1 m-1 text-sm rounded-md transition-colors hover:bg-gray-200">
+          <a href="/tags/%E7%AC%94%E8%AE%B0/">笔记</a>
+        </span>
+      
+    
+  </div>
+  <!-- prev and next -->
+  <div class="flex justify-between mt-12 pt-6 border-t border-gray-200">
+    <div>
+      
+        <a href="/2024/11/21/%E9%9F%A6%E6%B4%9B%E5%85%8B%E6%8B%89%E4%B8%81%E8%AF%AD%E7%AC%AC%E4%B8%80%E8%AF%BE/" class="text-sm text-gray-400 hover:text-gray-500 flex justify-center">
+          <iconify-icon width="20" icon="ri:arrow-left-s-line" data-inline="false"></iconify-icon>
+          韦洛克拉丁语第一课
+        </a>
+      
+    </div>
+    <div>
+      
+    </div>
+  </div>
+  <!-- comment -->
+  <div class="article-comments mt-12">
+    
+
+  </div>
+</section>
+<!-- js inspect -->
+
+<script src="/lib/clipboard.min.js"></script>
+
+
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": {
+        preferredFont: "TeX",
+        availableFonts: ["STIX","TeX"],
+        linebreaks: { automatic:true },
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
+        processEscapes: true,
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+        Macros: { href: "{}" }
+    },
+    messageStyle: "none"
+  });
+</script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+      for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+</script>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+<script>
+  $(document).ready(() => {
+    const maraidConfig = {
+      theme: "default",
+      logLevel: 3,
+      flowchart: { curve: "linear" },
+      gantt: { axisFormat: "%m/%d/%Y" },
+      sequence: { actorMargin: 50 },
+    };
+    mermaid.initialize(maraidConfig);
+  });
+</script>
+
+
+
+<script src="/lib/fancybox/fancybox.umd.min.js"></script>
+
+<script>
+  $(document).ready(() => {
+    $('.post-content').each(function(i){
+      $(this).find('img').each(function(){
+        if ($(this).parent().hasClass('fancybox') || $(this).parent().is('a')) return;
+        var alt = this.alt;
+        if (alt) $(this).after('<span class="fancybox-alt">' + alt + '</span>');
+        $(this).wrap('<a class="fancybox-img" href="' + this.src + '" data-fancybox=\"gallery\" data-caption="' + alt + '"></a>')
+      });
+      $(this).find('.fancybox').each(function(){
+        $(this).attr('rel', 'article' + i);
+      });
+    });
+
+    Fancybox.bind('[data-fancybox="gallery"]', {
+        // options
+    })
+  })
+</script>
+
+<!-- tocbot begin -->
+
+<script src="/lib/tocbot/tocbot.min.js"></script>
+
+<script>
+  $(document).ready(() => {
+      tocbot.init({
+        // Where to render the table of contents.
+        tocSelector: '.post-toc',
+        // Where to grab the headings to build the table of contents.
+        contentSelector: '.post-content',
+        // Which headings to grab inside of the contentSelector element.
+        headingSelector: 'h1, h2, h3',
+        // For headings inside relative or absolute positioned containers within content.
+        hasInnerContainers: true,
+    });
+  })
+</script>
+<!-- tocbot end -->
+
+
+  </main>
+  <footer class="flex flex-col h-40 items-center justify-center text-gray-400 text-sm">
+  <!-- busuanzi -->
+  
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<!-- Busuanzi Analytics -->
+<div class="flex items-center gap-2">
+  <span>Visitors</span>
+  <span id="busuanzi_value_site_uv"></span>
+  <span>Page Views</span>
+  <span id="busuanzi_value_site_pv"></span>
+</div>
+<!-- End Busuanzi Analytics -->
+
+
+  <!-- copyright -->
+  <div class="flex items-center gap-2">
+    <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" style="color: inherit;">CC BY-NC-SA 4.0</a>
+    <span>© 2022</span>
+    <iconify-icon width="18" icon="emojione-monotone:maple-leaf" ></iconify-icon>
+    <a href="https://github.com/xbmlz" target="_blank" rel="noopener noreferrer">xbmlz</a>
+  </div>
+  <!-- powered by -->
+  <div class="flex items-center gap-2">
+    <span>Powered by</span>
+    <a href="https://hexo.io/" target="_blank" rel="noopener noreferrer">Hexo</a>
+    <span>&</span>
+    <a href="https://github.com/xbmlz/hexo-theme-maple" target="_blank" rel="noopener noreferrer">Maple</a>
+  </div>
+
+</footer>
+
+  <div class="back-to-top box-border fixed right-6 z-1024 -bottom-20 rounded py-1 px-1 bg-slate-900 opacity-60 text-white cursor-pointer text-center dark:bg-slate-600">
+    <span class="flex justify-center items-center text-sm">
+      <iconify-icon width="18" icon="ion:arrow-up-c" id="go-top"></iconify-icon>
+      <span id="scrollpercent"><span>0</span> %</span>
+    </span>
+  </div>
+  
+<script src="/js/main.js"></script>
+
+
+  <script>
+    $(document).ready(function () {
+      const mapleCount = "10";
+      const speed = "0.5";
+      const mapleEl = document.getElementById("maple");
+      const maples = Array.from({ length: mapleCount }).map(() => {
+        const maple = document.createElement("div");
+        const scale = Math.random() * 0.5 + 0.5;
+        const offset = Math.random() * 2 - 1;
+        const x = Math.random() * mapleEl.clientWidth;
+        const y = -Math.random() * mapleEl.clientHeight;
+        const duration = 10 / speed;
+        const delay = -duration;
+        maple.className = "maple";
+        maple.style.width = `${24 * scale}px`;
+        maple.style.height = `${24 * scale}px`;
+        maple.style.left = `${x}px`;
+        maple.style.top = `${y}px`;
+        maple.style.setProperty("--maple-fall-offset", offset);
+        maple.style.setProperty("--maple-fall-height", `${Math.abs(y) + mapleEl.clientHeight}px`);
+        maple.style.animation = `fall ${duration}s linear infinite`;
+        maple.style.animationDelay = `${delay}s`;
+        mapleEl.appendChild(maple)
+        return maple
+      })
+    });
+  </script>
+  
+
+
+  <div class="fixed top-0 bottom-0 left-0 right-0 pointer-events-none print:hidden" id="maple"></div>
+</body>
+
+</html>
