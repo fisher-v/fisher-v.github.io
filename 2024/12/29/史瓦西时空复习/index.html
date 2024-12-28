@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+  <meta name="author" content="Samoyed">
+
+
+  <meta name="subtitle" content="乱七八糟">
+
+
+  <meta name="description" content="乱七八糟">
+
+
+
+<title>史瓦西时空复习 | 萨摩耶科技</title>
+
+
+
+<link rel="icon" href="/favicon.png">
+
+
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/nprogress/nprogress.css">
+
+
+
+<script src="/lib/jquery.min.js"></script>
+
+
+<script src="/lib/iconify-icon.min.js"></script>
+
+
+<script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+<script>
+  tailwind.config = {
+    darkMode: "class",
+  };
+</script>
+
+
+<script src="/lib/nprogress/nprogress.js"></script>
+
+<script>
+  $(document).ready(() => {
+    NProgress.configure({
+      showSpinner: false,
+    });
+    NProgress.start();
+    $("#nprogress .bar").css({
+      background: "#de7441",
+    });
+    $("#nprogress .peg").css({
+      "box-shadow": "0 0 2px #de7441, 0 0 4px #de7441",
+    });
+    $("#nprogress .spinner-icon").css({
+      "border-top-color": "#de7441",
+      "border-left-color": "#de7441",
+    });
+    setTimeout(function () {
+      NProgress.done();
+      $(".fade").removeClass("out");
+    }, 800);
+  });
+</script>
+
+<script>
+  (function () {
+    const prefersDark =
+      window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const setting = localStorage.getItem("hexo-color-scheme") || "auto";
+    if (setting === "dark" || (prefersDark && setting !== "light"))
+      document.documentElement.classList.toggle("dark", true);
+    let isDark = document.documentElement.classList.contains("dark");
+  })();
+
+  $(document).ready(function () {
+    // init icon
+    const prefersDark =
+      window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const isDark = document.documentElement.classList.contains("dark");
+    $("#theme-icon").attr("icon", isDark ? "ri:moon-line" : "ri:sun-line");
+
+    function toggleGiscusTheme() {
+      const isDark = document.documentElement.classList.contains("dark");
+      const giscusFrame = document.querySelector("iframe.giscus-frame");
+      if (giscusFrame) {
+        giscusFrame.contentWindow.postMessage(
+          {
+            giscus: {
+              setConfig: {
+                theme: isDark ? "dark" : "light",
+              },
+            },
+          },
+          "https://giscus.app"
+        );
+      }
+    }
+
+    // toggle dark mode
+    function toggleDark() {
+      let isDark = document.documentElement.classList.contains("dark");
+      const setting = localStorage.getItem("hexo-color-scheme") || "auto";
+      isDark = !isDark;
+      document.documentElement.classList.toggle("dark", isDark);
+      $("#theme-icon").attr("icon", isDark ? "ri:moon-line" : "ri:sun-line");
+      if (prefersDark === isDark) {
+        localStorage.setItem("hexo-color-scheme", "auto");
+      } else {
+        localStorage.setItem("hexo-color-scheme", isDark ? "dark" : "light");
+      }
+      toggleGiscusTheme();
+    }
+
+    // listen dark mode change
+    window
+      .matchMedia("(prefers-color-scheme: dark)")
+      .addEventListener("change", (e) => {
+        const setting = localStorage.getItem("hexo-color-scheme") || "auto";
+        if (setting === "auto") {
+          document.documentElement.classList.toggle("dark", e.matches);
+          $("#theme-icon").attr(
+            "icon",
+            e.matches ? "ri:moon-line" : "ri:sun-line"
+          );
+          toggleGiscusTheme();
+        }
+      });
+
+    $("#toggle-dark").click((event) => {
+      const isAppearanceTransition = document.startViewTransition && !window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      if (!isAppearanceTransition) {
+        toggleDark()
+        return
+      }
+      const x = event.clientX
+      const y = event.clientY
+      const endRadius = Math.hypot(
+        Math.max(x, innerWidth - x),
+        Math.max(y, innerHeight - y),
+      )
+      const transition = document.startViewTransition(async () => {
+        toggleDark()
+      })
+
+      transition.ready
+        .then(() => {
+          const isDark = document.documentElement.classList.contains("dark")
+          const clipPath = [
+            `circle(0px at ${x}px ${y}px)`,
+            `circle(${endRadius}px at ${x}px ${y}px)`,
+          ]
+          document.documentElement.animate(
+            {
+              clipPath: isDark
+                ? [...clipPath].reverse()
+                : clipPath,
+            },
+            {
+              duration: 400,
+              easing: 'ease-out',
+              pseudoElement: isDark
+                ? '::view-transition-old(root)'
+                : '::view-transition-new(root)',
+            },
+          )
+        })
+    });
+  });
+</script>
+
+
+
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+<body class="font-sans bg-white dark:bg-zinc-900 text-gray-700 dark:text-gray-200 relative">
+  <header class="fixed w-full px-5 py-1 z-10 backdrop-blur-xl backdrop-saturate-150 border-b border-black/5">
+  <div class="max-auto">
+    <nav class="flex items-center text-base">
+      <a href="/" class="group">
+        <h2 class="font-medium tracking-tighterp text-l p-2">
+          <img class="w-5 mr-2 inline-block transition-transform group-hover:rotate-[30deg]" id="logo" src="/images/logo.svg" alt="萨摩耶科技" />
+          萨摩耶科技
+        </h2>
+      </a>
+      <div id="header-title" class="opacity-0 md:ml-2 md:mt-[0.1rem] text-xs font-medium whitespace-nowrap overflow-hidden overflow-ellipsis">
+        史瓦西时空复习
+      </div>
+      <div class="flex-1"></div>
+      <div class="flex items-center gap-3">
+        
+          <a class="hidden sm:flex" href="/archives">Posts</a>
+        
+          <a class="hidden sm:flex" href="/category">Categories</a>
+        
+          <a class="hidden sm:flex" href="/tag">Tags</a>
+        
+        
+          
+        
+        <a class="w-5 h-5 hidden sm:flex" title="" href="rss2.xml">
+          <iconify-icon width="20" icon="ri:rss-line"></iconify-icon>
+        </a>
+        <a class="w-5 h-5" title="toggle theme" id="toggle-dark">
+          <iconify-icon width="20" icon="" id="theme-icon"></iconify-icon>
+        </a>
+      </div>
+      <div class="flex items-center justify-center gap-3 ml-3 sm:hidden">
+        <span class="w-5 h-5" aria-hidden="true" role="img" id="open-menu">
+          <iconify-icon width="20" icon="carbon:menu" ></iconify-icon>
+        </span>
+        <span class="w-5 h-5 hidden" aria-hidden="true" role="img" id="close-menu">
+          <iconify-icon  width="20" icon="carbon:close" ></iconify-icon>
+        </span>
+      </div>
+    </nav>
+  </div>
+</header>
+<div id="menu-panel" class="h-0 overflow-hidden sm:hidden fixed left-0 right-0 top-12 bottom-0 z-10">
+  <div id="menu-content" class="relative z-20 bg-white/80 px-6 sm:px-8 py-2 backdrop-blur-xl -translate-y-full transition-transform duration-300">
+    <ul class="nav flex flex-col sm:flex-row text-sm font-medium">
+      
+        <li class="nav-portfolio sm:mx-2 border-b sm:border-0 border-black/5 last:border-0 hover:text-main">
+          <a href="/archives" class="flex h-12 sm:h-auto items-center">Posts</a>
+        </li>
+      
+        <li class="nav-portfolio sm:mx-2 border-b sm:border-0 border-black/5 last:border-0 hover:text-main">
+          <a href="/category" class="flex h-12 sm:h-auto items-center">Categories</a>
+        </li>
+      
+        <li class="nav-portfolio sm:mx-2 border-b sm:border-0 border-black/5 last:border-0 hover:text-main">
+          <a href="/tag" class="flex h-12 sm:h-auto items-center">Tags</a>
+        </li>
+      
+    </ul>
+  </div>
+  <div class="mask bg-black/20 absolute inset-0"></div>
+</div>
+
+  <main class="pt-14">
+    <!-- css -->
+
+<link rel="stylesheet" href="/lib/fancybox/fancybox.min.css">
+
+
+<link rel="stylesheet" href="/lib/tocbot/tocbot.min.css">
+
+<!-- toc -->
+
+  <!-- tocbot -->
+<nav class="post-toc toc text-sm w-48 relative top-32 right-0 opacity-70 hidden lg:block" style="position: fixed !important;"></nav>
+
+
+<section class="px-6 max-w-prose mx-auto md:px-0">
+  <!-- header -->
+  <header class="overflow-hidden pt-6 pb-6 md:pt-12">
+    <div class="pt-4 md:pt-6">
+      <h1 id="article-title" class="text-[2rem] font-bold leading-snug mb-4 md:mb-6 md:text-[2.6rem]">
+        史瓦西时空复习
+      </h1>
+      <div>
+        <section class="flex items-center gap-3 text-sm">
+          <span class="flex items-center gap-1">
+            <iconify-icon width="18" icon="carbon-calendar" ></iconify-icon>
+            <time>2024-12-29</time>
+          </span>
+          <span class="text-gray-400">·</span>
+          <span class="flex items-center gap-1">
+            <iconify-icon width="18" icon="ic:round-access-alarm" ></iconify-icon>
+            <span>9 min</span>
+          </span>
+          <span class="text-gray-400">·</span>
+          <span class="flex items-center gap-1">
+            <iconify-icon width="18" icon="icon-park-outline:font-search" ></iconify-icon>
+            <span>2k words</span>
+          </span>
+          
+            <span class="text-gray-400">·</span>
+            <span class="flex items-center gap-1">
+              <iconify-icon width="16" icon="icon-park-outline:box" class="mr-2"></iconify-icon>
+              <a class="article-category-link" href="/categories/%E5%B9%BF%E4%B9%89%E7%9B%B8%E5%AF%B9%E8%AE%BA/">广义相对论</a>/<a class="article-category-link" href="/categories/%E5%B9%BF%E4%B9%89%E7%9B%B8%E5%AF%B9%E8%AE%BA/%E7%AC%94%E8%AE%B0/">笔记</a>
+            </span>
+          
+        </section>
+      </div>
+    </div>
+  </header>
+  <!-- content -->
+  <article class="post-content prose m-auto slide-enter-content dark:prose-invert">
+    <h2 id="史瓦西解和史瓦西黑洞总复习"><a href="#史瓦西解和史瓦西黑洞总复习" class="headerlink" title="史瓦西解和史瓦西黑洞总复习"></a>史瓦西解和史瓦西黑洞总复习</h2><p>Alex Liu —-2024 年末于雁栖湖</p>
+<h3 id="I-如何推出-Schwarzschild-解"><a href="#I-如何推出-Schwarzschild-解" class="headerlink" title="I. 如何推出 Schwarzschild 解"></a>I. 如何推出 Schwarzschild 解</h3><p>对于球对称的静态真空引力场, 度规不依赖于时间, 可以假设存在一个类时 Killing 向量, 建立四维球坐标系其表示为 $\xi^\mu_{(t)} &#x3D; (1,0,0,0)$ .</p>
+<p>这样的时空由于其求对称性, 其必然有一个 $\phi$ 方向的类空 Killing 向量: $\xi^\mu_{(\phi)} &#x3D; (0,0,0,1)$ , 其他 Killing 向量可以由 Killing 方程 $\xi_{\mu;\nu}+\xi_{\nu;\mu}$ 解出. </p>
+<p>那么度规必然不依赖于 $\phi$ , 令度规沿这两个方向求李导数, 发现得到度规可以对角化, 写成<br>$$<br>ds^2  &#x3D; -e^{2A}dt^2+e^{2B}dr^2+r^2(d\theta^2+\sin^2\theta d\phi^2)<br>$$<br>的形式.</p>
+<p>直接计算 Christoffel 符号:<br>$$<br>\Gamma^r_{rr}&#x3D;B’ , \Gamma^r_{tt} &#x3D; A’e^{2(A-B)} ,  \Gamma^r_{\theta\theta} &#x3D; -re^{-2B},\<br>\Gamma^r_{\phi\phi} &#x3D; -r\sin^2\theta e^{-2B} , \Gamma^\theta <em>{\phi\phi} &#x3D; -\cos\theta \sin\theta, \ \Gamma^t</em>{tr}&#x3D;A’,  \Gamma^\theta_{r\theta} &#x3D; r^{-1} , \Gamma^\phi_{r\phi} &#x3D; r^{-1} , \Gamma^\phi_{\theta\phi} &#x3D; \cot \theta .<br>$$<br>接下来求解非零 Ricci 曲率:<br>$$<br>R_{tt} &#x3D; [A’’+A’^2-A’B’++2r^{-1}A’]e^{2(A-B)} \<br>R_{rr} &#x3D; -A’’-A’^2+A’B’+2B’r^{-1} \<br>R_{\theta\theta} &#x3D; [rB’-rA’+e^{2B}-1]e^{-2B} \<br>R_{\phi\phi} &#x3D; R_{\theta\theta}\sin^2\theta<br>$$<br>由于是真空环境, Ricci 曲率为 0, 联立可以得到:<br>$$<br>A’+B’ &#x3D; 0\ r(B’-A’) +e^{2B}&#x3D;1<br>$$<br>进一步可得:<br>$$<br>(re^{-2B})’ &#x3D; 1<br>$$<br>可以积分得到:<br>$$<br>e^{-2B} &#x3D; 1-\frac {2M}r<br>$$<br>(这里采用自然单位制 $c&#x3D;G &#x3D;1$).</p>
+<p>这样便解得 Schwarzschild 解:<br>$$<br>ds^2&#x3D;-(1-\frac{2M}2)dt^2+(1-\frac{2M}2)^{-1}dr^2+r^2d\Omega^2<br>$$</p>
+<h3 id="II-其他两个-Killing-向量"><a href="#II-其他两个-Killing-向量" class="headerlink" title="II. 其他两个 Killing 向量"></a>II. 其他两个 Killing 向量</h3><p>求解 KIlling 方程:<br>$$<br>\xi_{\mu;\nu}+\xi_{\nu;\mu}&#x3D;0<br>$$<br>可以得到:<br>$$<br>\xi_{(1)} &#x3D; (0,0,-\sin\phi,-\cot\theta\cos\phi)\<br>\xi_{(2)}&#x3D;(0,0,\cos\phi,-\cot\theta\sin\phi)<br>$$</p>
+<h3 id="III-Schwarzschild解的延拓"><a href="#III-Schwarzschild解的延拓" class="headerlink" title="III. Schwarzschild解的延拓"></a>III. Schwarzschild解的延拓</h3><p>在 Schwarzschild 坐标中, $r&#x3D;2M$ 处度规会发生退化, 但是经过验证曲率:<br>$$<br>R &#x3D; R_{ijkl}R^{ijkl} &#x3D; \frac{48M^2}{r^6}<br>$$<br>在 $r&#x3D;2M$ 处并不奇异, 说明这里是坐标产生的奇异性. </p>
+<p>取乌龟坐标:<br>$$<br>dr_* &#x3D; \frac{dr}{1-\frac{2M}r}, \ \ \ \ r_* &#x3D; \int\frac{rdr}{r-2M}&#x3D;r+2M\ln|\frac{r-2M}{2M}|<br>$$<br>并做下面的代换:<br>$$<br>u_+ &#x3D; t+r_<em>\<br>u_- &#x3D; t-r_</em> \<br>du_+ &#x3D; dt+\frac{dr}{1-2M&#x2F;r}\<br>du_- &#x3D; dt-\frac{dr}{1-2M&#x2F;r}<br>$$<br>那么可以得到:<br>$$<br>ds^2 &#x3D; -(1-2M&#x2F;r)du_+^2+du_+dr+r^2d\Omega^2 \<br>ds^2 &#x3D; -(1-2M&#x2F;r)du_-^2-du_-dr+r^2d\Omega^2<br>$$<br>这个度规形式称为 Eddington 坐标, 其中  $u_+$ 称为超前 Eddington 坐标 ,  $u_-$ 称为滞后 Eddington 坐标. </p>
+<p>可以发现, 再这个坐标下,  $r&#x3D;2M$ 处不再有奇异性, 说明消去了这里的坐标奇异性. </p>
+<p>综合超前和滞后 Eddington 坐标, 令 $u &#x3D; t-r_*,v&#x3D;t+r_*$ 并且定义<br>$$<br>dU &#x3D;\pm (\pm e^{-u&#x2F;(4M)})du , dV&#x3D; \pm e^{v&#x2F;(4M)} dv<br>$$<br>可以得到 $ds^2 &#x3D; \frac{2M}r e^{-r&#x2F;(2M)}(-dUdV)+r^2d\Omega^2$ , </p>
+<p>令 $T&#x3D;(U+V)&#x2F;2,R&#x3D;(V-U)&#x2F;2$ 可以将度规写成如下形式:<br>$$<br>ds^2 &#x3D; \frac{2M}r e^{-r&#x2F;(2M)}(-dT^2+dR^2)+r^2d\Omega^2<br>$$<br>该坐标称为 Kruskal 坐标, 为 Schwarzschild 坐标的最大延拓. </p>
+<h3 id="IV-Schwarzschild-时空的测地线"><a href="#IV-Schwarzschild-时空的测地线" class="headerlink" title="IV. Schwarzschild 时空的测地线"></a>IV. Schwarzschild 时空的测地线</h3><p>由于球对称, 可以取 $\theta &#x3D; \frac\pi 2$ ,</p>
+<p>由于 $\partial_t,\partial_\phi$ 为 KIlling 向量所以测地线参数沿测地线与 KIlling 向量内积为常数, 所以, 令 $-(1-\frac{2M}r)\frac{dt}{d\lambda} &#x3D; -E, r^2\frac{d\phi}{d\lambda}&#x3D;L$ </p>
+<p>即有:<br>$$<br>(1-\frac{2M}r)^{-1} E &#x3D; \frac{dt}{d\lambda}\<br>\frac{d\phi}{d\lambda}&#x3D;Lr^{-2}<br>$$<br>对于类光和类时测地线, 还有其切向量的模长作为条件, 类时测地线取 $-1$ , 类光测地线取 $0$ . </p>
+<p>最后得到的测地线方程为:<br>$$<br>\frac{d^2 t}{d\lambda^2} + \frac{2M}{r^2} \left(1 - \frac{2M}{r}\right)^{-1} \frac{dt}{d\lambda} \frac{dr}{d\lambda} &#x3D; 0, \<br>\frac{d^2 r}{d\lambda^2} + \frac{2M}{r^2} \left(1 - \frac{2M}{r}\right) \left(\frac{dt}{d\lambda}\right)^2 - \frac{2M}{r^2} \left(1 - \frac{2M}{r}\right)^{-1} \left(\frac{dr}{d\lambda}\right)^2 - r \left(1 - \frac{2M}{r}\right) \left(\frac{d\varphi}{d\lambda}\right)^2 &#x3D; 0, \<br>\frac{d^2 \varphi}{d\lambda^2} + \frac{1}{r} \frac{dr}{d\lambda} \frac{d\varphi}{d\lambda} &#x3D; 0.<br>$$</p>
+<h4 id="i-对于类光方向"><a href="#i-对于类光方向" class="headerlink" title="i. 对于类光方向"></a>i. 对于类光方向</h4><p>令 $g_{\mu\nu} \dot\gamma_\mu \dot\gamma_\nu &#x3D; 0$</p>
+<p>可以得到: $ (\frac{dr}{d\lambda})^2&#x3D;E^2-L_z^2&#x2F;r^2(1-\frac{2M}r)$</p>
+<p>(1) 取 $L_z &#x3D; 0$</p>
+<p>可以得到方程为<br>$$<br>(\frac {dr}{d\lambda})^2 &#x3D; E^2\<br>\frac{dt}{d\lambda}&#x3D;(1-\frac{2M}r)^{-1}E\<br>\frac{d\phi}{d\lambda} &#x3D; 0<br>$$<br>取能量为 1 可以得到 $\frac{dt}{dr}&#x3D;\pm (1-\frac{2M}r)^{-1}$ </p>
+<p>积分得<br>$$<br>t&#x3D;t_0\pm[r-r_0+2M\ln(\frac{r-2M}{r_0-2M})].<br>$$<br>可以看出当 r 接近于 2M 时光信号的频率会发生红移, 波长变长.</p>
+<p>且对内行光来说, 其反射波会发生延迟, 这就是雷达回波效应.</p>
+<p>(2)取 $L_z \ne 0$</p>
+<p>先求解牛顿情况再取微扰即可以解得, 对应的效应为光线偏折效应. </p>
+<h4 id="II-对于类时方向"><a href="#II-对于类时方向" class="headerlink" title="II.对于类时方向"></a>II.对于类时方向</h4><p>同理令$g_{\mu\nu} \dot\gamma_\mu \dot\gamma_\nu &#x3D; -1$</p>
+<p>可以得到 $(\frac{dr}{d\lambda})^2&#x3D;E^2-(1+L_z^2&#x2F;r^2)(1-\frac{2M}r)$</p>
+<p>(1)取 $L_z &#x3D; 0$</p>
+<p>略</p>
+<p>(2)取 $L_z \ne 0$</p>
+<p>同理, 微扰法, 最后可以解得水星进动.</p>
+<h3 id="V-Schwarzschild-黑洞的参数"><a href="#V-Schwarzschild-黑洞的参数" class="headerlink" title="V. Schwarzschild 黑洞的参数"></a>V. Schwarzschild 黑洞的参数</h3><h4 id="i-奇点"><a href="#i-奇点" class="headerlink" title="i. 奇点"></a>i. 奇点</h4><p>对于 Schwarzschild 黑洞来说, 其本性奇点为 $r&#x3D;0$ 处, 也就是内禀奇异性位置.</p>
+<h4 id="ii-静界"><a href="#ii-静界" class="headerlink" title="ii. 静界"></a>ii. 静界</h4><p>在 $r\gt 2M$ 时, 物体可以静止在时空中, 称 $r&#x3D;2M$ 为静界</p>
+<h4 id="iii-事件视界"><a href="#iii-事件视界" class="headerlink" title="iii. 事件视界"></a>iii. 事件视界</h4><p>信号只能进不能出的一个超曲面, 叫做视界, 在视界内部是类空超曲面, 表面是类光超曲面, 外部是类时超曲面.</p>
+<p>那么对 Schwarzschild 黑洞来说, 有:<br>$$<br>n^\mu n_\mu &#x3D; g^{11} &#x3D; 1-2M&#x2F;r<br>$$<br>其中 n 为法向量, 当其模长取 0 是为类光, ,此时 $r&#x3D;2M$ 那么这就是视界位置.</p>
+<p>那么视界面积的计算: </p>
+<p>取度规, 令 r 和 t 都为常数, 此时有诱导的超曲面子流形度规为:<br>$$<br>ds^2 &#x3D; r^2d\theta^2+r^2\sin^2\theta d\phi^2<br>$$<br>其体积元为:<br>$$<br>dA &#x3D; r^2\sin\theta d\theta d\phi<br>$$<br>对其在全空间积分即得:<br>$$<br>A&#x3D;\int_S dA &#x3D;4\pi r^2<br>$$<br>视界上有 $r&#x3D;2M$ , 所以 $A&#x3D;16\pi M^2$. </p>
+<h4 id="iv-守恒量"><a href="#iv-守恒量" class="headerlink" title="iv. 守恒量"></a>iv. 守恒量</h4><p>在 Schwarzschild 度规下, 有 KIlling 向量场:<br>$$<br>\xi^\mu_{(t)} &#x3D; (1,0,0,0) \<br>\xi^\mu_{(\phi)} &#x3D; (0,0,0,1) \<br>\xi_{(1)} &#x3D; (0,0,-\sin\phi,-\cot\theta\cos\phi)\<br>\xi_{(2)}&#x3D;(0,0,\cos\phi,-\cot\theta\sin\phi)<br>$$<br>对其一一求 kommar 积分 $\int*d\xi$</p>
+<ol>
+<li><p>$$<br>\int *d\xi^\mu_{(t)} &#x3D; \int * d(-(1-2M&#x2F;r)dt) \<br>&#x3D;\int *(-\frac{2M}{r^2}dt\wedge dr) \<br>&#x3D;\int -M\sin \theta d\theta d\phi &#x3D;4\pi M<br>$$</p>
+<p>其对应于质量守恒.</p>
+</li>
+<li><p>$$<br>\int* d\xi^\mu_{(\phi)} &#x3D; \int <em>d(r^2\sin^2\theta d\phi)\<br>&#x3D;\int</em>[2r\sin^2\theta d\phi\wedge dr+2r^2\cos \theta\sin\theta d\phi \wedge d\theta] \ &#x3D; \int r^3\sin^3\theta dt\wedge d\theta+r^4\sin^2\theta\cos\theta dr\wedge dt\<br>&#x3D;0<br>$$</p>
+<p>这一项对应于时空角动量恒为 0 .</p>
+</li>
+</ol>
+<h4 id="v-表面重力"><a href="#v-表面重力" class="headerlink" title="v. 表面重力"></a>v. 表面重力</h4><p>黑洞的事件视界与某个类时 KIlling 向量的 KIlling 视界重合, 记为 $\xi$ 其满足 $\nabla_\xi\xi&#x3D;-\kappa\xi$<br>$$<br>\kappa^2 &#x3D;-1&#x2F;2(\nabla_a\xi_b)(\nabla^a\xi^b)<br>$$<br>Schwarzschild 黑洞的表面重力可计算如下: </p>
+<p>在 Eddington 坐标下取 $\xi&#x3D;(1,0,0,0)$ </p>
+<p>则<br>$$<br>\kappa ^2&#x3D; M^2&#x2F;r^4<br>$$<br>取 $r&#x3D; 2M$ 则 $\kappa &#x3D; \frac1 {4M}$</p>
+<p>或者有, $\kappa &#x3D; a\sqrt{-g_{00}}$ , a为四加速度<br>$$<br>a &#x3D; -\frac{d^2l}{d\tau^2} &#x3D; -\sqrt{g_{11}}\frac{d^2r}{d\tau^2}<br>\ dl^2 &#x3D; g_{11}dr^2<br>$$<br>利用测地线方程:<br>$$<br>\frac{d^2x^\lambda}{d\tau^2}+\Gamma_{\mu\nu}^\lambda \frac{dx^\mu}{d\tau}\frac{dx^\nu}{d\tau}&#x3D;0<br>$$<br>可以解得:<br>$$<br>\frac{d^2r}{d\tau^2} &#x3D; \Gamma_{00}^1	(g_{00})^{-1}<br>$$<br>所以<br>$$<br>\kappa &#x3D; \frac1 2 \sqrt{g^{11}}(g_{00})^{-1}\partial_rg_{00}<br>$$</p>
+
+  </article>
+  <!-- tag -->
+  <div class="mt-12 pt-6 border-t border-gray-200">
+    
+      
+        <span class="bg-gray-100 dark:bg-gray-700 px-2 py-1 m-1 text-sm rounded-md transition-colors hover:bg-gray-200">
+          <a href="/tags/%E5%B9%BF%E4%B9%89%E7%9B%B8%E5%AF%B9%E8%AE%BA/">广义相对论</a>
+        </span>
+      
+    
+  </div>
+  <!-- prev and next -->
+  <div class="flex justify-between mt-12 pt-6 border-t border-gray-200">
+    <div>
+      
+    </div>
+    <div>
+      
+        <a href="/2024/12/11/%E5%B9%BF%E4%B9%89%E7%9B%B8%E5%AF%B9%E8%AE%BA%E7%9A%84%E6%95%B0%E5%AD%A6/" class="text-sm text-gray-400 hover:text-gray-500 flex justify-center">
+          广义相对论的数学
+          <iconify-icon width="20" icon="ri:arrow-right-s-line" data-inline="false"></iconify-icon>
+        </a>
+      
+    </div>
+  </div>
+  <!-- comment -->
+  <div class="article-comments mt-12">
+    
+
+  </div>
+</section>
+<!-- js inspect -->
+
+<script src="/lib/clipboard.min.js"></script>
+
+
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": {
+        preferredFont: "TeX",
+        availableFonts: ["STIX","TeX"],
+        linebreaks: { automatic:true },
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
+        processEscapes: true,
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+        Macros: { href: "{}" }
+    },
+    messageStyle: "none"
+  });
+</script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+      for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+</script>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+<script>
+  $(document).ready(() => {
+    const maraidConfig = {
+      theme: "default",
+      logLevel: 3,
+      flowchart: { curve: "linear" },
+      gantt: { axisFormat: "%m/%d/%Y" },
+      sequence: { actorMargin: 50 },
+    };
+    mermaid.initialize(maraidConfig);
+  });
+</script>
+
+
+
+<script src="/lib/fancybox/fancybox.umd.min.js"></script>
+
+<script>
+  $(document).ready(() => {
+    $('.post-content').each(function(i){
+      $(this).find('img').each(function(){
+        if ($(this).parent().hasClass('fancybox') || $(this).parent().is('a')) return;
+        var alt = this.alt;
+        if (alt) $(this).after('<span class="fancybox-alt">' + alt + '</span>');
+        $(this).wrap('<a class="fancybox-img" href="' + this.src + '" data-fancybox=\"gallery\" data-caption="' + alt + '"></a>')
+      });
+      $(this).find('.fancybox').each(function(){
+        $(this).attr('rel', 'article' + i);
+      });
+    });
+
+    Fancybox.bind('[data-fancybox="gallery"]', {
+        // options
+    })
+  })
+</script>
+
+<!-- tocbot begin -->
+
+<script src="/lib/tocbot/tocbot.min.js"></script>
+
+<script>
+  $(document).ready(() => {
+      tocbot.init({
+        // Where to render the table of contents.
+        tocSelector: '.post-toc',
+        // Where to grab the headings to build the table of contents.
+        contentSelector: '.post-content',
+        // Which headings to grab inside of the contentSelector element.
+        headingSelector: 'h1, h2, h3',
+        // For headings inside relative or absolute positioned containers within content.
+        hasInnerContainers: true,
+    });
+  })
+</script>
+<!-- tocbot end -->
+
+
+  </main>
+  <footer class="flex flex-col h-40 items-center justify-center text-gray-400 text-sm">
+  <!-- busuanzi -->
+  
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<!-- Busuanzi Analytics -->
+<div class="flex items-center gap-2">
+  <span>Visitors</span>
+  <span id="busuanzi_value_site_uv"></span>
+  <span>Page Views</span>
+  <span id="busuanzi_value_site_pv"></span>
+</div>
+<!-- End Busuanzi Analytics -->
+
+
+  <!-- copyright -->
+  <div class="flex items-center gap-2">
+    <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" style="color: inherit;">CC BY-NC-SA 4.0</a>
+    <span>© 2022</span>
+    <iconify-icon width="18" icon="emojione-monotone:maple-leaf" ></iconify-icon>
+    <a href="https://github.com/xbmlz" target="_blank" rel="noopener noreferrer">xbmlz</a>
+  </div>
+  <!-- powered by -->
+  <div class="flex items-center gap-2">
+    <span>Powered by</span>
+    <a href="https://hexo.io/" target="_blank" rel="noopener noreferrer">Hexo</a>
+    <span>&</span>
+    <a href="https://github.com/xbmlz/hexo-theme-maple" target="_blank" rel="noopener noreferrer">Maple</a>
+  </div>
+
+</footer>
+
+  <div class="back-to-top box-border fixed right-6 z-1024 -bottom-20 rounded py-1 px-1 bg-slate-900 opacity-60 text-white cursor-pointer text-center dark:bg-slate-600">
+    <span class="flex justify-center items-center text-sm">
+      <iconify-icon width="18" icon="ion:arrow-up-c" id="go-top"></iconify-icon>
+      <span id="scrollpercent"><span>0</span> %</span>
+    </span>
+  </div>
+  
+<script src="/js/main.js"></script>
+
+
+  <script>
+    $(document).ready(function () {
+      const mapleCount = "10";
+      const speed = "0.5";
+      const mapleEl = document.getElementById("maple");
+      const maples = Array.from({ length: mapleCount }).map(() => {
+        const maple = document.createElement("div");
+        const scale = Math.random() * 0.5 + 0.5;
+        const offset = Math.random() * 2 - 1;
+        const x = Math.random() * mapleEl.clientWidth;
+        const y = -Math.random() * mapleEl.clientHeight;
+        const duration = 10 / speed;
+        const delay = -duration;
+        maple.className = "maple";
+        maple.style.width = `${24 * scale}px`;
+        maple.style.height = `${24 * scale}px`;
+        maple.style.left = `${x}px`;
+        maple.style.top = `${y}px`;
+        maple.style.setProperty("--maple-fall-offset", offset);
+        maple.style.setProperty("--maple-fall-height", `${Math.abs(y) + mapleEl.clientHeight}px`);
+        maple.style.animation = `fall ${duration}s linear infinite`;
+        maple.style.animationDelay = `${delay}s`;
+        mapleEl.appendChild(maple)
+        return maple
+      })
+    });
+  </script>
+  
+
+
+  <div class="fixed top-0 bottom-0 left-0 right-0 pointer-events-none print:hidden" id="maple"></div>
+</body>
+
+</html>

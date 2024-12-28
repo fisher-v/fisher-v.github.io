@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+  <meta name="author" content="Samoyed">
+
+
+  <meta name="subtitle" content="乱七八糟">
+
+
+  <meta name="description" content="乱七八糟">
+
+
+
+<title>广义相对论的数学 | 萨摩耶科技</title>
+
+
+
+<link rel="icon" href="/favicon.png">
+
+
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/nprogress/nprogress.css">
+
+
+
+<script src="/lib/jquery.min.js"></script>
+
+
+<script src="/lib/iconify-icon.min.js"></script>
+
+
+<script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+<script>
+  tailwind.config = {
+    darkMode: "class",
+  };
+</script>
+
+
+<script src="/lib/nprogress/nprogress.js"></script>
+
+<script>
+  $(document).ready(() => {
+    NProgress.configure({
+      showSpinner: false,
+    });
+    NProgress.start();
+    $("#nprogress .bar").css({
+      background: "#de7441",
+    });
+    $("#nprogress .peg").css({
+      "box-shadow": "0 0 2px #de7441, 0 0 4px #de7441",
+    });
+    $("#nprogress .spinner-icon").css({
+      "border-top-color": "#de7441",
+      "border-left-color": "#de7441",
+    });
+    setTimeout(function () {
+      NProgress.done();
+      $(".fade").removeClass("out");
+    }, 800);
+  });
+</script>
+
+<script>
+  (function () {
+    const prefersDark =
+      window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const setting = localStorage.getItem("hexo-color-scheme") || "auto";
+    if (setting === "dark" || (prefersDark && setting !== "light"))
+      document.documentElement.classList.toggle("dark", true);
+    let isDark = document.documentElement.classList.contains("dark");
+  })();
+
+  $(document).ready(function () {
+    // init icon
+    const prefersDark =
+      window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const isDark = document.documentElement.classList.contains("dark");
+    $("#theme-icon").attr("icon", isDark ? "ri:moon-line" : "ri:sun-line");
+
+    function toggleGiscusTheme() {
+      const isDark = document.documentElement.classList.contains("dark");
+      const giscusFrame = document.querySelector("iframe.giscus-frame");
+      if (giscusFrame) {
+        giscusFrame.contentWindow.postMessage(
+          {
+            giscus: {
+              setConfig: {
+                theme: isDark ? "dark" : "light",
+              },
+            },
+          },
+          "https://giscus.app"
+        );
+      }
+    }
+
+    // toggle dark mode
+    function toggleDark() {
+      let isDark = document.documentElement.classList.contains("dark");
+      const setting = localStorage.getItem("hexo-color-scheme") || "auto";
+      isDark = !isDark;
+      document.documentElement.classList.toggle("dark", isDark);
+      $("#theme-icon").attr("icon", isDark ? "ri:moon-line" : "ri:sun-line");
+      if (prefersDark === isDark) {
+        localStorage.setItem("hexo-color-scheme", "auto");
+      } else {
+        localStorage.setItem("hexo-color-scheme", isDark ? "dark" : "light");
+      }
+      toggleGiscusTheme();
+    }
+
+    // listen dark mode change
+    window
+      .matchMedia("(prefers-color-scheme: dark)")
+      .addEventListener("change", (e) => {
+        const setting = localStorage.getItem("hexo-color-scheme") || "auto";
+        if (setting === "auto") {
+          document.documentElement.classList.toggle("dark", e.matches);
+          $("#theme-icon").attr(
+            "icon",
+            e.matches ? "ri:moon-line" : "ri:sun-line"
+          );
+          toggleGiscusTheme();
+        }
+      });
+
+    $("#toggle-dark").click((event) => {
+      const isAppearanceTransition = document.startViewTransition && !window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      if (!isAppearanceTransition) {
+        toggleDark()
+        return
+      }
+      const x = event.clientX
+      const y = event.clientY
+      const endRadius = Math.hypot(
+        Math.max(x, innerWidth - x),
+        Math.max(y, innerHeight - y),
+      )
+      const transition = document.startViewTransition(async () => {
+        toggleDark()
+      })
+
+      transition.ready
+        .then(() => {
+          const isDark = document.documentElement.classList.contains("dark")
+          const clipPath = [
+            `circle(0px at ${x}px ${y}px)`,
+            `circle(${endRadius}px at ${x}px ${y}px)`,
+          ]
+          document.documentElement.animate(
+            {
+              clipPath: isDark
+                ? [...clipPath].reverse()
+                : clipPath,
+            },
+            {
+              duration: 400,
+              easing: 'ease-out',
+              pseudoElement: isDark
+                ? '::view-transition-old(root)'
+                : '::view-transition-new(root)',
+            },
+          )
+        })
+    });
+  });
+</script>
+
+
+
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+<body class="font-sans bg-white dark:bg-zinc-900 text-gray-700 dark:text-gray-200 relative">
+  <header class="fixed w-full px-5 py-1 z-10 backdrop-blur-xl backdrop-saturate-150 border-b border-black/5">
+  <div class="max-auto">
+    <nav class="flex items-center text-base">
+      <a href="/" class="group">
+        <h2 class="font-medium tracking-tighterp text-l p-2">
+          <img class="w-5 mr-2 inline-block transition-transform group-hover:rotate-[30deg]" id="logo" src="/images/logo.svg" alt="萨摩耶科技" />
+          萨摩耶科技
+        </h2>
+      </a>
+      <div id="header-title" class="opacity-0 md:ml-2 md:mt-[0.1rem] text-xs font-medium whitespace-nowrap overflow-hidden overflow-ellipsis">
+        广义相对论的数学
+      </div>
+      <div class="flex-1"></div>
+      <div class="flex items-center gap-3">
+        
+          <a class="hidden sm:flex" href="/archives">Posts</a>
+        
+          <a class="hidden sm:flex" href="/category">Categories</a>
+        
+          <a class="hidden sm:flex" href="/tag">Tags</a>
+        
+        
+          
+        
+        <a class="w-5 h-5 hidden sm:flex" title="" href="rss2.xml">
+          <iconify-icon width="20" icon="ri:rss-line"></iconify-icon>
+        </a>
+        <a class="w-5 h-5" title="toggle theme" id="toggle-dark">
+          <iconify-icon width="20" icon="" id="theme-icon"></iconify-icon>
+        </a>
+      </div>
+      <div class="flex items-center justify-center gap-3 ml-3 sm:hidden">
+        <span class="w-5 h-5" aria-hidden="true" role="img" id="open-menu">
+          <iconify-icon width="20" icon="carbon:menu" ></iconify-icon>
+        </span>
+        <span class="w-5 h-5 hidden" aria-hidden="true" role="img" id="close-menu">
+          <iconify-icon  width="20" icon="carbon:close" ></iconify-icon>
+        </span>
+      </div>
+    </nav>
+  </div>
+</header>
+<div id="menu-panel" class="h-0 overflow-hidden sm:hidden fixed left-0 right-0 top-12 bottom-0 z-10">
+  <div id="menu-content" class="relative z-20 bg-white/80 px-6 sm:px-8 py-2 backdrop-blur-xl -translate-y-full transition-transform duration-300">
+    <ul class="nav flex flex-col sm:flex-row text-sm font-medium">
+      
+        <li class="nav-portfolio sm:mx-2 border-b sm:border-0 border-black/5 last:border-0 hover:text-main">
+          <a href="/archives" class="flex h-12 sm:h-auto items-center">Posts</a>
+        </li>
+      
+        <li class="nav-portfolio sm:mx-2 border-b sm:border-0 border-black/5 last:border-0 hover:text-main">
+          <a href="/category" class="flex h-12 sm:h-auto items-center">Categories</a>
+        </li>
+      
+        <li class="nav-portfolio sm:mx-2 border-b sm:border-0 border-black/5 last:border-0 hover:text-main">
+          <a href="/tag" class="flex h-12 sm:h-auto items-center">Tags</a>
+        </li>
+      
+    </ul>
+  </div>
+  <div class="mask bg-black/20 absolute inset-0"></div>
+</div>
+
+  <main class="pt-14">
+    <!-- css -->
+
+<link rel="stylesheet" href="/lib/fancybox/fancybox.min.css">
+
+
+<link rel="stylesheet" href="/lib/tocbot/tocbot.min.css">
+
+<!-- toc -->
+
+  <!-- tocbot -->
+<nav class="post-toc toc text-sm w-48 relative top-32 right-0 opacity-70 hidden lg:block" style="position: fixed !important;"></nav>
+
+
+<section class="px-6 max-w-prose mx-auto md:px-0">
+  <!-- header -->
+  <header class="overflow-hidden pt-6 pb-6 md:pt-12">
+    <div class="pt-4 md:pt-6">
+      <h1 id="article-title" class="text-[2rem] font-bold leading-snug mb-4 md:mb-6 md:text-[2.6rem]">
+        广义相对论的数学
+      </h1>
+      <div>
+        <section class="flex items-center gap-3 text-sm">
+          <span class="flex items-center gap-1">
+            <iconify-icon width="18" icon="carbon-calendar" ></iconify-icon>
+            <time>2024-12-11</time>
+          </span>
+          <span class="text-gray-400">·</span>
+          <span class="flex items-center gap-1">
+            <iconify-icon width="18" icon="ic:round-access-alarm" ></iconify-icon>
+            <span>5 min</span>
+          </span>
+          <span class="text-gray-400">·</span>
+          <span class="flex items-center gap-1">
+            <iconify-icon width="18" icon="icon-park-outline:font-search" ></iconify-icon>
+            <span>1.2k words</span>
+          </span>
+          
+            <span class="text-gray-400">·</span>
+            <span class="flex items-center gap-1">
+              <iconify-icon width="16" icon="icon-park-outline:box" class="mr-2"></iconify-icon>
+              <a class="article-category-link" href="/categories/%E5%B9%BF%E4%B9%89%E7%9B%B8%E5%AF%B9%E8%AE%BA/">广义相对论</a>/<a class="article-category-link" href="/categories/%E5%B9%BF%E4%B9%89%E7%9B%B8%E5%AF%B9%E8%AE%BA/%E7%AC%94%E8%AE%B0/">笔记</a>
+            </span>
+          
+        </section>
+      </div>
+    </div>
+  </header>
+  <!-- content -->
+  <article class="post-content prose m-auto slide-enter-content dark:prose-invert">
+    <h2 id="广义相对论的数学部分"><a href="#广义相对论的数学部分" class="headerlink" title="广义相对论的数学部分"></a>广义相对论的数学部分</h2><p>Alex Liu于雁栖湖</p>
+<h3 id="1-张量的对称化和反对称化"><a href="#1-张量的对称化和反对称化" class="headerlink" title="1.张量的对称化和反对称化"></a>1.张量的对称化和反对称化</h3><p>对张量$T_{\mu_1…\mu_n\rho}^{\ \ \ \ \ \ \ \ \ \ \  \ \sigma}$</p>
+<p>有$T_{(\mu_1…\mu_n)\rho}^{\ \ \ \ \ \ \ \ \ \ \  \ \sigma} &#x3D; \frac1{n!}(\text{对所有相关的置换求和})$</p>
+<p>$T_{[\mu_1…\mu_n]\rho}^{\ \ \ \ \ \ \ \ \ \ \  \ \sigma} &#x3D; \frac1{n!}(\text{对所有相关的置换交错求和,也就是奇置换取负号,偶置换取正号})$</p>
+<h3 id="2-Riemann-正则坐标"><a href="#2-Riemann-正则坐标" class="headerlink" title="2.Riemann 正则坐标"></a>2.Riemann 正则坐标</h3><p>总存在满足如下条件的坐标卡:<br>$$<br>g_{\mu \nu}|<em>p &#x3D;\eta</em>{\mu\nu}\<br>\partial <em>\sigma g</em>{\mu \nu}|_p &#x3D; 0 \<br>\partial_\sigma \partial <em>\rho g</em>{\mu\nu} \ne 0<br>$$<br>称为 Riemann 正则坐标</p>
+<p>指数映射$exp_p(v)&#x3D;\gamma(1)$</p>
+<p>选定$x^i(q)&#x3D;v^i, q&#x3D;exp_p(v)$ 作为一组标架称为 Riemann 法坐标,上面 Christoffel 符号为 0, 这个是局部的</p>
+<h3 id="3-向量的分类"><a href="#3-向量的分类" class="headerlink" title="3.向量的分类"></a>3.向量的分类</h3><p>类光: 模长为 0</p>
+<p>类空: 模长为正</p>
+<p>类时: 模长为负</p>
+<h3 id="4-p-形式"><a href="#4-p-形式" class="headerlink" title="4.p-形式"></a>4.p-形式</h3><h5 id="全反对称的-p-0-型张量"><a href="#全反对称的-p-0-型张量" class="headerlink" title="全反对称的(p,0)型张量"></a>全反对称的(p,0)型张量</h5><p>$\omega_{a_1 … a_n} &#x3D; \omega_{[a_1… a_n]} &#x3D;\frac 1{p!}\sum(-1)^\sigma\omega_{\sigma[a_1… a_p]}$</p>
+<h5 id="Wedge-product"><a href="#Wedge-product" class="headerlink" title="Wedge product"></a>Wedge product</h5><p>$\omega \wedge \mu :&#x3D; \frac{(p+q)!}{p!q!}\omega_{[a_1 … a_p]}\mu_{[b_1… b_q]}$</p>
+<h5 id="奇数阶的形式自乘为-0"><a href="#奇数阶的形式自乘为-0" class="headerlink" title="奇数阶的形式自乘为 0"></a>奇数阶的形式自乘为 0</h5><p>wedge product 交换协对称(乘系数$(-1)^{pq}$)</p>
+<h5 id="体积元-base-形式场"><a href="#体积元-base-形式场" class="headerlink" title="体积元(base 形式场)"></a>体积元(base 形式场)</h5><p>$\epsilon :&#x3D; \sqrt{|g|}dx^1 \wedge … \wedge dx^n$</p>
+<h5 id="Hodge对偶"><a href="#Hodge对偶" class="headerlink" title="Hodge对偶"></a>Hodge对偶</h5><p>$*\omega :&#x3D; \frac1{p!}\epsilon <em>{a_1 …a_pb_1…b</em>{n-p}}\omega^{a_1…a_p}$</p>
+<p>$** &#x3D; (-1)^{s+p(n-p)}$ s为号差(度规的 trace )</p>
+<h5 id="外微分"><a href="#外微分" class="headerlink" title="外微分"></a>外微分</h5><p>$d\omega :&#x3D; \frac1{p!}\partial_p \omega_{i_1…i_p}dx^{i_1}\wedge…\wedge d^{i_p}$</p>
+<p>$dd &#x3D;0$</p>
+<h5 id="余微分"><a href="#余微分" class="headerlink" title="余微分"></a>余微分</h5><p>$\delta :&#x3D; <em>d</em>$</p>
+<h3 id="5-Lie导数"><a href="#5-Lie导数" class="headerlink" title="5.Lie导数"></a>5.Lie导数</h3><p>积分曲线</p>
+<p>$\frac{dx^\mu}{dt}&#x3D;V^\mu$</p>
+<p>对于微分同胚$\phi $和张量场$T(p)$有拉回张量场$\phi_*[T(\phi(p))]$ </p>
+<p>Lie导数定义为拉回张量场减去原张量场对 t 趋近于 0 的比值的极限</p>
+<p>这里的微分同胚就是积分曲线</p>
+<p>也就是说$L_VT$就是沿 V 的积分曲线做平移后比较</p>
+<p>性质如下</p>
+<p>不改变张量性质</p>
+<p>与坐标无关</p>
+<p>作用在函数上时退化为普通方向导数</p>
+<p>对 killing 向量来说退化为普通导数$L_{\xi_t} T &#x3D; \frac\partial{\partial t}T$</p>
+<p>具体计算</p>
+<p>对于函数$L_X f &#x3D; X(f)$</p>
+<p>对于 1 形式$(L_X \alpha)_i&#x3D;X^j\partial_j\alpha_i+\alpha_j\partial_iX^j$</p>
+<p>对于 p 形式$L_X \omega &#x3D;d(i_X\omega)+i_Xd\omega$</p>
+<p>对向量场$L_X u &#x3D; [X,u]$</p>
+<h5 id="Killing-向量定义"><a href="#Killing-向量定义" class="headerlink" title="Killing 向量定义"></a>Killing 向量定义</h5><p> $L_\xi g_{\mu \nu}&#x3D;0$</p>
+<h3 id="6-协变导数与levi-civita联络"><a href="#6-协变导数与levi-civita联络" class="headerlink" title="6.协变导数与levi-civita联络"></a>6.协变导数与levi-civita联络</h3><p>Levi-civita联络的定义为满足以下条件的映射:</p>
+<p>对向量场 XYZ</p>
+<p>$\nabla_X (aY+bZ)&#x3D;a\nabla_XY+b\nabla_XZ$</p>
+<p>$\nabla_{fX+hY}Z&#x3D; f\nabla_XZ+h\nabla_YZ$</p>
+<p>leibniz法则$\nabla_X(fY)&#x3D; f\nabla_XY+X(f)Y$</p>
+<p>与 g 相容$\nabla_Z(g(X,Y))&#x3D;g(\nabla_ZX,Y)+g(X,\nabla_ZY)$</p>
+<p>无挠$\nabla_XY-\nabla_YX&#x3D;[X,Y]&#x3D;L_XY$ </p>
+<p>协变导数定义为, 沿一条光滑曲线的切向量场的 levi-civita 联络</p>
+<p>$V^a\nabla_aT &#x3D; \nabla_VT  &#x3D; V^a (\partial_aT^b +\Gamma^b_{ac}T^c)\partial_b$ 其实是向量场乘沿 a 基向量方向的联络 然后求和(这里不是分量式)</p>
+<p>Christoffel 符号的具体计算</p>
+<p>$\Gamma^\rho_{\mu\nu} &#x3D; \frac12 g^{\rho \lambda}(\partial_\nu g_{\mu\lambda}+\partial_\mu g_{\nu\lambda}-\partial_\lambda g_{\mu\nu})$</p>
+<h5 id="测地线方程"><a href="#测地线方程" class="headerlink" title="测地线方程"></a>测地线方程</h5><p>$$<br>\frac{d^2x^\mu}{dt^2}+\Gamma^\mu_{\alpha\beta}\frac{dx^\alpha}{dt}\frac{dx^\beta}{dt} &#x3D; 0<br>$$</p>
+<h3 id="7-Riemann曲率"><a href="#7-Riemann曲率" class="headerlink" title="7.Riemann曲率"></a>7.Riemann曲率</h3><p>定义R</p>
+<p>为$R:&#x3D;g(R(X,Y)Z,W)$</p>
+<p>$R(X,Y)Z:&#x3D;[\nabla_X,\nabla_Y]Z-\nabla_{[X,Y]}Z &#x3D; \nabla_X(\nabla_YZ)-\nabla_Y(\nabla_XZ)-\nabla_{[X,Y]}Z$</p>
+<p>对 R 有是(3,1)型张量满足</p>
+<p>$R(X,Y,Z,W)&#x3D;-R(Y,X,Z,W)&#x3D;-R(X,Y,W,Z)$</p>
+<p>$R(X,Y,Z,W)&#x3D;R(Z,W,X,Y)$</p>
+<p>$R(X,Y,Z,W)+R(Y,Z,X,W)+R(Z,X,Y,W) &#x3D; 0$ (Bianchi第一恒等式) $R_{[\mu\nu\rho]^\sigma &#x3D; 0}$</p>
+<p>$(\nabla_XR)(Y,Z,W,V)+(\nabla_YR)(Z,X,W,V)+(\nabla_ZR)(X,Y,W,V)&#x3D;0$ (Bianchi第二恒等式)$\nabla_{[\alpha}R_{\mu\nu]\rho}^\sigma&#x3D;0$</p>
+<p>如何计算分量</p>
+<p>$R_{ijk}^l &#x3D; \partial_i\Gamma^l_{jk}-\partial_j\Gamma^l_{ik}+\Gamma^m_{jk}\Gamma^l_{im}-\Gamma^m_{ik}\Gamma^l_{jm}$</p>
+<p><strong>Ricci曲率</strong> $R_{ij}:&#x3D; R_{ikj}^k$</p>
+<p>Gauss曲率 $R&#x3D;g^{ij}R_{ij}$</p>
+<p>Weyl 曲率 $C_{\mu \nu \rho \lambda}&#x3D;R_{\mu \nu \rho \lambda}-\frac{2}{(n-2)}\left(g_{\rho[\mu} R_{\nu] \lambda}-g_{\lambda[\mu} R_{\nu] \rho}\right)+\frac{2}{(n-1)(n-2)} R g_{\rho[\mu} g_{\nu] \lambda}$ 也就是黎曼张量的无迹部分</p>
+<p>$R_{ij}&#x3D;R_{ijk}^k &#x3D; \partial_i\Gamma^k_{jk}-\partial_j\Gamma^k_{ik}+\Gamma^m_{jk}\Gamma^k_{im}-\Gamma^m_{ik}\Gamma^k_{jm}$</p>
+<h3 id="8-子流形"><a href="#8-子流形" class="headerlink" title="8.子流形"></a>8.子流形</h3><p>子流形上的诱导度规(第一基本形式)计算</p>
+<p>$h_{ab} &#x3D; i_* g_{ab}$ $i$为嵌入</p>
+<p>法方向$n &#x3D; df$</p>
+<p>$h&#x3D;g-g(n,n)n\otimes n$</p>
+<p>外曲率(第二基本形式)计算:$K_{jk} &#x3D; 1&#x2F;2 (L_nh_{ab})e_j^ae_k^b$</p>
+<p>流程: 首先选定曲面内的参数, 然后生成基向量, 利用正交化可以选定法向量,然后带入进行计算</p>
+<p>对余一维的子流形, 法方向的李导数退化为普通导数计算</p>
+
+  </article>
+  <!-- tag -->
+  <div class="mt-12 pt-6 border-t border-gray-200">
+    
+      
+        <span class="bg-gray-100 dark:bg-gray-700 px-2 py-1 m-1 text-sm rounded-md transition-colors hover:bg-gray-200">
+          <a href="/tags/%E5%B9%BF%E4%B9%89%E7%9B%B8%E5%AF%B9%E8%AE%BA/">广义相对论</a>
+        </span>
+      
+    
+  </div>
+  <!-- prev and next -->
+  <div class="flex justify-between mt-12 pt-6 border-t border-gray-200">
+    <div>
+      
+        <a href="/2024/12/29/%E5%8F%B2%E7%93%A6%E8%A5%BF%E6%97%B6%E7%A9%BA%E5%A4%8D%E4%B9%A0/" class="text-sm text-gray-400 hover:text-gray-500 flex justify-center">
+          <iconify-icon width="20" icon="ri:arrow-left-s-line" data-inline="false"></iconify-icon>
+          史瓦西时空复习
+        </a>
+      
+    </div>
+    <div>
+      
+        <a href="/2024/11/30/%E9%97%B2%E7%AC%94/" class="text-sm text-gray-400 hover:text-gray-500 flex justify-center">
+          闲笔
+          <iconify-icon width="20" icon="ri:arrow-right-s-line" data-inline="false"></iconify-icon>
+        </a>
+      
+    </div>
+  </div>
+  <!-- comment -->
+  <div class="article-comments mt-12">
+    
+
+  </div>
+</section>
+<!-- js inspect -->
+
+<script src="/lib/clipboard.min.js"></script>
+
+
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": {
+        preferredFont: "TeX",
+        availableFonts: ["STIX","TeX"],
+        linebreaks: { automatic:true },
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
+        processEscapes: true,
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+        Macros: { href: "{}" }
+    },
+    messageStyle: "none"
+  });
+</script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+      for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+</script>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+<script>
+  $(document).ready(() => {
+    const maraidConfig = {
+      theme: "default",
+      logLevel: 3,
+      flowchart: { curve: "linear" },
+      gantt: { axisFormat: "%m/%d/%Y" },
+      sequence: { actorMargin: 50 },
+    };
+    mermaid.initialize(maraidConfig);
+  });
+</script>
+
+
+
+<script src="/lib/fancybox/fancybox.umd.min.js"></script>
+
+<script>
+  $(document).ready(() => {
+    $('.post-content').each(function(i){
+      $(this).find('img').each(function(){
+        if ($(this).parent().hasClass('fancybox') || $(this).parent().is('a')) return;
+        var alt = this.alt;
+        if (alt) $(this).after('<span class="fancybox-alt">' + alt + '</span>');
+        $(this).wrap('<a class="fancybox-img" href="' + this.src + '" data-fancybox=\"gallery\" data-caption="' + alt + '"></a>')
+      });
+      $(this).find('.fancybox').each(function(){
+        $(this).attr('rel', 'article' + i);
+      });
+    });
+
+    Fancybox.bind('[data-fancybox="gallery"]', {
+        // options
+    })
+  })
+</script>
+
+<!-- tocbot begin -->
+
+<script src="/lib/tocbot/tocbot.min.js"></script>
+
+<script>
+  $(document).ready(() => {
+      tocbot.init({
+        // Where to render the table of contents.
+        tocSelector: '.post-toc',
+        // Where to grab the headings to build the table of contents.
+        contentSelector: '.post-content',
+        // Which headings to grab inside of the contentSelector element.
+        headingSelector: 'h1, h2, h3',
+        // For headings inside relative or absolute positioned containers within content.
+        hasInnerContainers: true,
+    });
+  })
+</script>
+<!-- tocbot end -->
+
+
+  </main>
+  <footer class="flex flex-col h-40 items-center justify-center text-gray-400 text-sm">
+  <!-- busuanzi -->
+  
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<!-- Busuanzi Analytics -->
+<div class="flex items-center gap-2">
+  <span>Visitors</span>
+  <span id="busuanzi_value_site_uv"></span>
+  <span>Page Views</span>
+  <span id="busuanzi_value_site_pv"></span>
+</div>
+<!-- End Busuanzi Analytics -->
+
+
+  <!-- copyright -->
+  <div class="flex items-center gap-2">
+    <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" style="color: inherit;">CC BY-NC-SA 4.0</a>
+    <span>© 2022</span>
+    <iconify-icon width="18" icon="emojione-monotone:maple-leaf" ></iconify-icon>
+    <a href="https://github.com/xbmlz" target="_blank" rel="noopener noreferrer">xbmlz</a>
+  </div>
+  <!-- powered by -->
+  <div class="flex items-center gap-2">
+    <span>Powered by</span>
+    <a href="https://hexo.io/" target="_blank" rel="noopener noreferrer">Hexo</a>
+    <span>&</span>
+    <a href="https://github.com/xbmlz/hexo-theme-maple" target="_blank" rel="noopener noreferrer">Maple</a>
+  </div>
+
+</footer>
+
+  <div class="back-to-top box-border fixed right-6 z-1024 -bottom-20 rounded py-1 px-1 bg-slate-900 opacity-60 text-white cursor-pointer text-center dark:bg-slate-600">
+    <span class="flex justify-center items-center text-sm">
+      <iconify-icon width="18" icon="ion:arrow-up-c" id="go-top"></iconify-icon>
+      <span id="scrollpercent"><span>0</span> %</span>
+    </span>
+  </div>
+  
+<script src="/js/main.js"></script>
+
+
+  <script>
+    $(document).ready(function () {
+      const mapleCount = "10";
+      const speed = "0.5";
+      const mapleEl = document.getElementById("maple");
+      const maples = Array.from({ length: mapleCount }).map(() => {
+        const maple = document.createElement("div");
+        const scale = Math.random() * 0.5 + 0.5;
+        const offset = Math.random() * 2 - 1;
+        const x = Math.random() * mapleEl.clientWidth;
+        const y = -Math.random() * mapleEl.clientHeight;
+        const duration = 10 / speed;
+        const delay = -duration;
+        maple.className = "maple";
+        maple.style.width = `${24 * scale}px`;
+        maple.style.height = `${24 * scale}px`;
+        maple.style.left = `${x}px`;
+        maple.style.top = `${y}px`;
+        maple.style.setProperty("--maple-fall-offset", offset);
+        maple.style.setProperty("--maple-fall-height", `${Math.abs(y) + mapleEl.clientHeight}px`);
+        maple.style.animation = `fall ${duration}s linear infinite`;
+        maple.style.animationDelay = `${delay}s`;
+        mapleEl.appendChild(maple)
+        return maple
+      })
+    });
+  </script>
+  
+
+
+  <div class="fixed top-0 bottom-0 left-0 right-0 pointer-events-none print:hidden" id="maple"></div>
+</body>
+
+</html>
